@@ -1,0 +1,285 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTheme } from "../../context/ThemeContext";
+import {
+  Wrench,
+  Moon,
+  Sun,
+  Menu,
+  X,
+  ChevronDown,
+  LayoutDashboard,
+  LogOut,
+  User,
+} from "lucide-react";
+
+export default function Nav() {
+  const pathname = usePathname();
+  const { theme, toggleTheme, mounted } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Mock / baseline auth state (will be connected to BetterAuth in Step 4)
+  const [user, setUser] = useState(null);
+  const [demoRole, setDemoRole] = useState("visitor"); // 'visitor' | 'customer' | 'owner' | 'admin'
+
+  // Quick demo role switcher handler for previewing navbar states
+  const handleRoleChange = (role) => {
+    setDemoRole(role);
+    if (role === "visitor") {
+      setUser(null);
+    } else {
+      setUser({
+        name: role.charAt(0).toUpperCase() + role.slice(1) + " Demo",
+        email: `${role}@jontrobazar.com`,
+        role: role,
+      });
+    }
+  };
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "All Equipment", href: "/equipment" },
+    { name: "How It Works", href: "/how-it-works" },
+    { name: "About Us", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ];
+
+  if (user) {
+    navLinks.push({ name: "Dashboard", href: "/dashboard" });
+  }
+
+  return (
+    <>
+      {/* 1. TOP UTILITY ANNOUNCEMENT BAR (Non-sticky: scrolls naturally with page) */}
+      <div className="w-full bg-[#0b0f17] text-xs text-neutral-300 border-b border-neutral-800/80 px-4 sm:px-6 lg:px-8 py-2">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+          {/* Left: Dispatch & Status info */}
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1.5 text-amber-400 font-semibold">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              Verified Fleet Across 64 Districts
+            </span>
+            <span className="text-neutral-700 hidden sm:inline">|</span>
+            <span className="hidden sm:inline text-neutral-400">
+              24/7 Dispatch Support:{" "}
+              <span className="text-white font-bold tracking-wider">
+                +880 9613-882200
+              </span>
+            </span>
+          </div>
+
+          {/* Right: Quick Demo Role Switcher */}
+          <div className="flex items-center gap-2 ml-auto">
+            <span className="text-neutral-400 hidden md:inline text-[11px]">
+              Quick Demo Role:
+            </span>
+            <div className="relative inline-block">
+              <select
+                aria-label="Quick Demo Role"
+                value={demoRole}
+                onChange={(e) => handleRoleChange(e.target.value)}
+                className="bg-neutral-900 text-neutral-200 border border-neutral-750 text-xs rounded px-2.5 py-1 pr-6 font-medium appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-orange-500"
+              >
+                <option value="visitor">Logged Out (Visitor)</option>
+                <option value="customer">Customer</option>
+                <option value="owner">Equipment Owner</option>
+                <option value="admin">Administrator</option>
+              </select>
+              <ChevronDown className="w-3 h-3 text-neutral-400 pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. MAIN HEADER (Sticky on top across the entire page) */}
+      <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#0c1017]/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800/80 shadow-sm transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+          {/* Brand Logo & Tagline */}
+          <Link href="/" className="flex items-center gap-3 group shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-neutral-950 dark:bg-neutral-900 border border-neutral-800 flex items-center justify-center shadow-md group-hover:border-orange-500 transition-colors">
+              <Wrench className="w-5 h-5 text-orange-500 group-hover:rotate-12 transition-transform" />
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5">
+                <span className="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
+                  Jontro<span className="text-orange-500">Bazar</span>
+                </span>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border border-neutral-300 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-850">
+                  BD
+                </span>
+              </div>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 -mt-0.5">
+                Industrial & Pro Gear Exchange
+              </span>
+            </div>
+          </Link>
+
+          {/* Navigation Links (Desktop) */}
+          <div className="hidden lg:flex items-center gap-8">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`text-sm font-semibold transition-colors py-1 relative ${
+                    isActive
+                      ? "text-orange-600 dark:text-orange-500 font-bold"
+                      : "text-neutral-700 hover:text-orange-600 dark:text-neutral-300 dark:hover:text-orange-400"
+                  }`}
+                >
+                  {link.name}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-orange-500 rounded-full" />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Right Controls: Theme Toggle & Auth Buttons */}
+          <div className="flex items-center gap-3">
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-850 transition-colors cursor-pointer"
+            >
+              {mounted && theme === "dark" ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
+            </button>
+
+            {/* Auth Buttons */}
+            {!user ? (
+              <div className="hidden sm:flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="text-sm font-semibold text-neutral-700 dark:text-neutral-200 hover:text-orange-600 dark:hover:text-orange-400 px-3.5 py-2 rounded-lg transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="text-sm font-bold text-white bg-orange-600 hover:bg-orange-700 active:bg-orange-800 px-5 py-2.5 rounded-lg shadow-sm transition-all shadow-orange-600/20 hover:shadow-orange-600/30"
+                >
+                  Register
+                </Link>
+              </div>
+            ) : (
+              <div className="hidden sm:flex items-center gap-3">
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 hover:text-orange-500 transition-colors"
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  <span>Dashboard</span>
+                  <span className="ml-1 text-[10px] uppercase font-bold px-1 rounded bg-orange-100 dark:bg-orange-950/80 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-900">
+                    {user.role}
+                  </span>
+                </Link>
+                <button
+                  onClick={() => setUser(null)}
+                  className="p-2 rounded-lg text-neutral-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  title="Logout"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+
+            {/* Mobile Menu Toggle Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg lg:hidden text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              aria-label="Toggle mobile menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* 3. MOBILE MENU DRAWER */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#0c1017] px-4 pt-3 pb-6 space-y-3">
+            <div className="flex flex-col space-y-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`px-3 py-2 rounded-md text-sm font-semibold ${
+                    pathname === link.href
+                      ? "bg-orange-50 dark:bg-neutral-800 text-orange-600 dark:text-orange-400 font-bold"
+                      : "text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+
+            <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800 flex flex-col gap-2">
+              {!user ? (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center py-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 rounded-lg"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-center py-2 text-sm font-bold text-white bg-orange-600 rounded-lg shadow-sm"
+                  >
+                    Register
+                  </Link>
+                </>
+              ) : (
+                <div className="flex items-center justify-between px-2 pt-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xs">
+                      {user.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-neutral-900 dark:text-white">
+                        {user.name}
+                      </div>
+                      <div className="text-xs text-neutral-400">
+                        Role: {user.role}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setUser(null);
+                      setMobileMenuOpen(false);
+                    }}
+                    className="flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-600"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </header>
+    </>
+  );
+}
