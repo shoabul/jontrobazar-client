@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
 import {
   Wrench,
   Moon,
@@ -21,22 +22,25 @@ export default function Nav() {
   const { theme, toggleTheme, mounted } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Mock / baseline auth state (will be connected to BetterAuth in Step 4)
-  const [user, setUser] = useState(null);
-  const [demoRole, setDemoRole] = useState("visitor"); // 'visitor' | 'customer' | 'owner' | 'admin'
+  const { user: authUser, role: authRole, signOutUser } = useAuth();
+  const [demoRole, setDemoRole] = useState("auto"); // 'auto' | 'visitor' | 'customer' | 'owner' | 'admin'
 
-  // Quick demo role switcher handler for previewing navbar states
+  // Resolve active user: uses real BetterAuth session unless demo switcher overrides
+  let user = authUser;
+  if (demoRole !== "auto") {
+    if (demoRole === "visitor") {
+      user = null;
+    } else {
+      user = {
+        name: demoRole.charAt(0).toUpperCase() + demoRole.slice(1) + " Demo",
+        email: `${demoRole}@jontrobazar.com`,
+        role: demoRole,
+      };
+    }
+  }
+
   const handleRoleChange = (role) => {
     setDemoRole(role);
-    if (role === "visitor") {
-      setUser(null);
-    } else {
-      setUser({
-        name: role.charAt(0).toUpperCase() + role.slice(1) + " Demo",
-        email: `${role}@jontrobazar.com`,
-        role: role,
-      });
-    }
   };
 
   const navLinks = [
@@ -86,10 +90,13 @@ export default function Nav() {
                 onChange={(e) => handleRoleChange(e.target.value)}
                 className="bg-neutral-900 text-neutral-200 border border-neutral-750 text-xs rounded px-2.5 py-1 pr-6 font-medium appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-orange-500"
               >
-                <option value="visitor">Logged Out (Visitor)</option>
-                <option value="customer">Customer</option>
-                <option value="owner">Equipment Owner</option>
-                <option value="admin">Administrator</option>
+                <option value="auto">
+                  Live: {authUser ? `${authUser.name || authUser.email} (${authRole})` : "Logged Out (Visitor)"}
+                </option>
+                <option value="visitor">Preview: Logged Out (Visitor)</option>
+                <option value="customer">Preview: Customer</option>
+                <option value="owner">Preview: Equipment Owner</option>
+                <option value="admin">Preview: Administrator</option>
               </select>
               <ChevronDown className="w-3 h-3 text-neutral-400 pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
             </div>
@@ -178,17 +185,31 @@ export default function Nav() {
               <div className="hidden sm:flex items-center gap-3">
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 hover:text-orange-500 transition-colors"
+                  className="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-850 text-neutral-800 dark:text-neutral-200 hover:text-orange-500 transition-colors border border-neutral-200 dark:border-neutral-750"
                 >
-                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  {user.image ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={user.image}
+                      alt={user.name || "Avatar"}
+                      className="w-5 h-5 rounded-full object-cover border border-orange-500"
+                    />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-[10px]">
+                      {(user.name || user.email || "U").charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <span>Dashboard</span>
-                  <span className="ml-1 text-[10px] uppercase font-bold px-1 rounded bg-orange-100 dark:bg-orange-950/80 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-900">
+                  <span className="ml-1 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-orange-100 dark:bg-orange-950/80 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-900">
                     {user.role}
                   </span>
                 </Link>
                 <button
-                  onClick={() => setUser(null)}
-                  className="p-2 rounded-lg text-neutral-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  onClick={async () => {
+                    if (demoRole !== "auto") setDemoRole("auto");
+                    if (authUser) await signOutUser();
+                  }}
+                  className="p-2 rounded-lg text-neutral-500 hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"
                   title="Logout"
                 >
                   <LogOut className="w-4 h-4" />
@@ -265,11 +286,12 @@ export default function Nav() {
                     </div>
                   </div>
                   <button
-                    onClick={() => {
-                      setUser(null);
+                    onClick={async () => {
+                      if (demoRole !== "auto") setDemoRole("auto");
+                      if (authUser) await signOutUser();
                       setMobileMenuOpen(false);
                     }}
-                    className="flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-600"
+                    className="flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-600 cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     Logout

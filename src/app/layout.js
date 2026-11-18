@@ -3,6 +3,7 @@ import "./globals.css";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import { ThemeProvider } from "../context/ThemeContext";
+import { AuthProvider } from "../context/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,9 +48,11 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-full flex flex-col bg-white dark:bg-[#090d16] text-neutral-900 dark:text-neutral-100 transition-colors selection:bg-orange-500 selection:text-white">
         <ThemeProvider>
-          <Nav />
-          <main className="flex-1 w-full">{children}</main>
-          <Footer />
+          <AuthProvider>
+            <Nav />
+            <main className="flex-1 w-full">{children}</main>
+            <Footer />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
