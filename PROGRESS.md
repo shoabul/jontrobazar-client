@@ -1,20 +1,20 @@
 # PROGRESS.md — JontroBazar (client)
 
 ## Current Status
-- Last completed task: Step 3 — Client layout (dynamic responsive Nav matching screenshot 1, 4-column Footer matching screenshot 2 with new X logo, ThemeContext with light/dark toggle, loading page, not-found page, and error boundary)
-- Currently working on: Ready for Step 4 (Auth: BetterAuth integration, register, login, Google social auth, role handling)
-- Overall: 3 / 12 build steps done
+- Last completed task: Step 4 — BetterAuth integration (register, login, Google social, JWT plugin, AuthContext, Nav updated with real session)
+- Currently working on: Step 5 — Server: Equipment CRUD routes + Step 6: Owner dashboard pages
+- Overall: 4 / 12 build steps done
 
 ## Next Steps
-1. Configure BetterAuth in Next.js (`src/app/api/auth/[...all]/route.js`) with MongoDB adapter & JWT plugin
-2. Create Auth client helper (`src/lib/auth-client.js`)
-3. Build Register page with password policy validation (min 6 chars, 1 uppercase, 1 lowercase) and imgbb upload
-4. Build Login page with email/password and Google social login
-5. Connect active session to Navbar (profile avatar, role badge, dashboard link, and logout)
+1. Step 5 (Server): Equipment CRUD — `controllers/equipment.controller.js`, `routes/equipment.routes.js`, MongoDB text index, status workflow
+2. Step 6 (Client): Owner dashboard pages — Add Equipment (imgbb upload), My Equipment table (update/delete/view)
+3. Step 7 (Admin): Approve/reject equipment, manage users pages
+4. Step 8: Home page sections (banner, featured 6, categories, Why Choose Us, reviews, Framer Motion)
+5. Step 9: All Equipment public page (server-side search/filter/sort/pagination)
 
 ## Completed Features (summary checklist)
 - [x] Setup & env
-- [ ] Auth (register / login / Google / JWT via BetterAuth)
+- [x] Auth (register / login / Google / JWT via BetterAuth)
 - [ ] Role middlewares / protected routes
 - [ ] Owner: equipment CRUD
 - [ ] Admin: approve/reject, users, rentals
@@ -45,6 +45,8 @@
 - `GOOGLE_CLIENT_SECRET`
 - `NEXT_PUBLIC_IMGBB_API_KEY`
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `MONGO_URI`
+- `DB_NAME`
 
 ## Packages Installed
 - `next` (^16.4.6)
@@ -54,9 +56,46 @@
 - `lucide-react` (^1.16.0)
 - `eslint` (^9)
 - `eslint-config-next` (^16.4.6)
+- `better-auth` (BetterAuth core + MongoDB adapter + JWT plugin)
+- `mongodb` (MongoDB driver for BetterAuth adapter)
+- `sweetalert2` (Toasts and alerts)
 
 ## Known Issues / TODO
-- BetterAuth endpoints to be wired in Step 4.
+- Dashboard layout and protected route middleware for Next.js still needed.
+- BetterAuth Google social login requires authorized redirect URI set in Google Cloud Console for production.
+
+## Log (newest first)
+### 2026-11-18 — Step 4: BetterAuth Integration (Register, Login, Google, JWT, AuthContext)
+- Done:
+  - Installed `better-auth`, `mongodb` (for BetterAuth adapter), `sweetalert2`.
+  - Created `src/lib/mongodb.js` — singleton MongoClient with HMR-safe global in dev.
+  - Created `src/lib/auth.js` — `betterAuth` with `mongodbAdapter`, email/password plugin, Google social login (conditional on env vars), `additionalFields` for `role`, `phone`, `address`, and `jwt()` plugin.
+  - Created `src/app/api/auth/[...all]/route.js` — `toNextJsHandler(auth)` exports GET + POST, handling all BetterAuth endpoints including `/api/auth/token` for JWT retrieval.
+  - Created `src/lib/auth-client.js` — `createAuthClient` with `jwtClient()` plugin; exports `signIn`, `signUp`, `signOut`, `useSession`, `getSession`.
+  - Created `src/context/AuthContext.jsx` — `AuthProvider` using `useSession`, fetches JWT from `/api/auth/token`, exposes `user`, `token`, `role`, `isLoading`, `signOutUser`, `refreshSession`.
+  - Created `src/lib/notify.js` — `showToast(icon, title)` and `showAlert({...})` using SweetAlert2 with orange confirm button.
+  - Created `src/app/register/page.jsx` — full form: name, email, photo (URL or imgbb file upload), password with policy validation (min 6, 1 upper, 1 lower), `signUp.email()`, SweetAlert toasts, redirect on success.
+  - Created `src/app/login/page.jsx` — email+password + Google `signIn.social()`, `redirect` query param support, SweetAlert toasts, link to register.
+  - Updated `src/app/components/Nav.jsx` — imports `useAuth` from AuthContext, demo dropdown with `auto` live session mode, real logout via `signOutUser()`, avatar image with fallback badge.
+  - `npm run lint` passed 0 errors after fixing: `useSyncExternalStore` in ThemeContext, `queueMicrotask` for setToken-in-effect in AuthContext, ESLint suppression on `<img>` for external images.
+- Files:
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/lib/mongodb.js`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/lib/auth.js`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/api/auth/[...all]/route.js`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/lib/auth-client.js`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/context/AuthContext.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/lib/notify.js`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/register/page.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/login/page.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/components/Nav.jsx` (updated)
+  - `H:/projects_web14/assignment-9/jontrobazar-client/.env.local` (MONGO_URI + DB_NAME added)
+  - `H:/projects_web14/assignment-9/jontrobazar-client/.env.local.example` (updated)
+- Test:
+  - `npm run lint` — 0 errors.
+  - Register: fill form → SweetAlert success → redirect to `/`.
+  - Login: email+password → SweetAlert success → redirect. Google button → OAuth flow.
+  - Logged-in Nav: avatar + Dashboard button + Logout visible. Logged-out: Login + Register.
+- Commit message: `feat: integrate betterauth with register, login, google social, jwt plugin, and authcontext`
 
 ## Log (newest first)
 ### 2026-11-18 — Step 3: Layout (Navbar, Footer, Theme, Loading & Error Pages)
