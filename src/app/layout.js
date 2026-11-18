@@ -1,7 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Nav from "./components/Nav";
-import Footer from "./components/Footer";
+import AppShell from "./components/AppShell";
 import { ThemeProvider } from "../context/ThemeContext";
 import { AuthProvider } from "../context/AuthContext";
 
@@ -49,9 +48,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col bg-white dark:bg-[#090d16] text-neutral-900 dark:text-neutral-100 transition-colors selection:bg-orange-500 selection:text-white">
         <ThemeProvider>
           <AuthProvider>
-            <Nav />
-            <main className="flex-1 w-full">{children}</main>
-            <Footer />
+            <AppShell />
           </AuthProvider>
         </ThemeProvider>
       </body>

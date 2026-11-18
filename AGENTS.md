@@ -114,7 +114,7 @@ Project name, purpose, live URL, key features, npm packages used.
 3. ✅ Client: layout (navbar/footer), theme, loading + error page
 4. ✅ Auth: register, login, Google, role handling
 5. ✅ Server: Equipment CRUD (owner + admin routes, search/filter/sort)
-6. ➡️ Client: Owner dashboard pages (Add Equipment, My Equipment table) ← CURRENT
+6. ➡️ Client: Owner dashboard pages (Add Equipment, My Equipment table) ← CURRENT (Part 1: API Layer Done)
 7. Client: Admin dashboard pages (approve/reject equipment, manage users)
 8. Client: Public pages (Home sections + All Equipment)
 9. Details page + favorites

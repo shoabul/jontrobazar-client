@@ -1,22 +1,23 @@
 # PROGRESS.md — JontroBazar (client)
 
 ## Current Status
-- Last completed task: Step 4 — BetterAuth integration (register, login, Google social, JWT plugin, AuthContext, Nav updated with real session)
-- Currently working on: Step 5 — Server: Equipment CRUD routes + Step 6: Owner dashboard pages
-- Overall: 4 / 12 build steps done
+- Last completed task: Step 6 (Part 2): Owner dashboard pages — DashboardLayout, Add Equipment, My Equipment table, View details, Edit form
+- Currently working on: Step 7 (Admin): Approve/reject equipment, manage users pages
+- Overall: 6 / 12 build steps done
 
 ## Next Steps
-1. Step 5 (Server): Equipment CRUD — `controllers/equipment.controller.js`, `routes/equipment.routes.js`, MongoDB text index, status workflow
-2. Step 6 (Client): Owner dashboard pages — Add Equipment (imgbb upload), My Equipment table (update/delete/view)
-3. Step 7 (Admin): Approve/reject equipment, manage users pages
-4. Step 8: Home page sections (banner, featured 6, categories, Why Choose Us, reviews, Framer Motion)
-5. Step 9: All Equipment public page (server-side search/filter/sort/pagination)
+1. Step 7 (Client): Admin dashboard pages — All Users (change role), All Equipment (approve/reject/update/delete), All Rentals (monitor)
+2. Step 8: Home page sections (banner, featured 6, categories, Why Choose Us, reviews, Framer Motion)
+3. Step 9: All Equipment public page (server-side search/filter/sort/pagination)
+4. Step 10: Equipment Details + Favorites
+5. Step 11: Booking modal + Stripe + Payments + success page
+6. Step 12: Customer / Owner / Admin dashboards (tables) + Analytics + README + deploy
 
 ## Completed Features (summary checklist)
 - [x] Setup & env
 - [x] Auth (register / login / Google / JWT via BetterAuth)
-- [ ] Role middlewares / protected routes
-- [ ] Owner: equipment CRUD
+- [x] Server: Equipment CRUD (owner + admin routes, search/filter/sort, MongoDB text index)
+- [x] Owner: equipment CRUD (Add, My Equipment table, View, Edit)
 - [ ] Admin: approve/reject, users, rentals
 - [ ] Public pages (Home, All Equipment)
 - [ ] Details + Favorites
@@ -65,7 +66,46 @@
 - BetterAuth Google social login requires authorized redirect URI set in Google Cloud Console for production.
 
 ## Log (newest first)
-### 2026-11-18 — Step 4: BetterAuth Integration (Register, Login, Google, JWT, AuthContext)
+### 2026-11-19 — Step 6 (Part 2): Owner Dashboard Pages
+- Done:
+  - Created `src/app/components/AppShell.jsx` — client boundary that detects `/dashboard*` paths and omits global `<Nav />` / `<Footer />`. Wrapped in `<Suspense>` so `usePathname()` doesn't block prerendering.
+  - Updated `src/app/layout.js` to render `<AppShell />` instead of hardcoded `<Nav />` + `<main>` + `<Footer />`.
+  - Created `src/app/dashboard/layout.jsx` — injects the role-aware `DashboardLayout` (sidebar + content area) for every dashboard page.
+  - Created `src/app/dashboard/page.jsx` — server-side redirect to `/dashboard/<role>` using BetterAuth session read from request cookies. Logged-out visitors land on `/login?redirect=/dashboard`.
+  - Created `src/components/DashboardLayout.jsx` — role-aware sidebar with distinct accent colors (customer: amber, owner: orange, admin: purple), user footer with logout, and a "Back to Marketplace" link.
+  - Created `src/app/dashboard/owner/page.jsx` — Owner Overview with quick-access cards (My Equipment, Add Equipment, Rentals, Profile).
+  - Created `src/app/dashboard/owner/add-equipment/page.jsx` — full equipment form with imgbb file upload + Image URL option, all fields from DB schema, status=pending, SweetAlert success.
+  - Created `src/app/dashboard/owner/equipment/page.jsx` — My Equipment table with image, name, category, price, quantity, status badge, and View/Update/Delete actions.
+  - Created `src/app/dashboard/owner/equipment/[id]/page.jsx` — Equipment details view with image gallery, specs grid, description, terms, and owner info.
+  - Created `src/app/dashboard/owner/equipment/[id]/edit/page.jsx` — Edit form preloaded from server, imgbb upload, PUT to `/equipment/:id`.
+  - `npm run build` passes cleanly with Turbopack.
+- Files:
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/components/AppShell.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/layout.js` (updated)
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/dashboard/layout.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/dashboard/page.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/components/DashboardLayout.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/dashboard/owner/page.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/dashboard/owner/add-equipment/page.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/dashboard/owner/equipment/page.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/dashboard/owner/equipment/[id]/page.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/app/dashboard/owner/equipment/[id]/edit/page.jsx`
+  - `H:/projects_web14/assignment-9/jontrobazar-client/PROGRESS.md` (updated)
+- Test:
+  - `npm run build` — all 11 routes compiled successfully.
+  - Dashboard routes prerender as partial static (dynamic content streamed in).
+- Commit message: `feat: implement owner dashboard pages with add equipment, my equipment table, view and edit forms`
+
+### 2026-11-18 — Step 6 (Part 1): API Client Layer
+- Done:
+  - Created `src/lib/api.js` — central `fetch` wrapper using `useAuth` context to inject JWT from `api/auth/token`.
+  - Implemented automatic handling for 401 (re-login), 403 (insufficient permissions toast), and 500 (server error toast).
+  - Provided `useApi()` hook for component usage: `const { api } = useApi(); await api('/path', { method: 'POST', body: {...} })`.
+- Files:
+  - `H:/projects_web14/assignment-9/jontrobazar-client/src/lib/api.js`
+- Test:
+  - Ready for consumption by dashboard features.
+- Commit message: `feat: implement api client with jwt injection and unified error handling`
 - Done:
   - Installed `better-auth`, `mongodb` (for BetterAuth adapter), `sweetalert2`.
   - Created `src/lib/mongodb.js` — singleton MongoClient with HMR-safe global in dev.
