@@ -1,16 +1,15 @@
 # PROGRESS.md — JontroBazar (client)
 
 ## Current Status
-- Last completed task: Step 7 (Admin): Admin dashboard pages — Users (role change), Equipment moderation (approve/reject/delete), Rentals monitoring, Settings
-- Currently working on: Step 8 (Public): Home page sections (banner, featured 6, categories, Why Choose Us, reviews, Framer Motion)
-- Overall: 7 / 12 build steps done
+- Last completed task: Step 8 (Public): Home page sections (banner, featured 6, categories, Why Choose Us, How It Works, reviews, Recently Added) with Framer Motion
+- Currently working on: Step 9 (Public): All Equipment page (server-side search/filter/sort/pagination)
+- Overall: 8 / 12 build steps done
 
 ## Next Steps
-1. Step 8: Home page sections (banner, featured 6, categories, Why Choose Us, reviews, Framer Motion)
-2. Step 9: All Equipment public page (server-side search/filter/sort/pagination)
-3. Step 10: Equipment Details + Favorites
-4. Step 11: Booking modal + Stripe + Payments + success page
-5. Step 12: Customer / Owner / Admin dashboards (tables) + Analytics + README + deploy
+1. Step 9: All Equipment public page (server-side search/filter/sort/pagination)
+2. Step 10: Equipment Details + Favorites
+3. Step 11: Booking modal + Stripe + Payments + success page
+4. Step 12: Customer / Owner / Admin dashboards (tables) + Analytics + README + deploy
 
 ## Bug Fixes Applied
 - `src/app/layout.js`: Added `export const instant = false;` — opts root layout out of instant-navigation validation (root AppShell reads `usePathname()` at runtime).
@@ -24,7 +23,8 @@
 - [x] Server: Equipment CRUD (owner + admin routes, search/filter/sort, MongoDB text index)
 - [x] Owner: equipment CRUD (Add, My Equipment table, View, Edit)
 - [x] Admin: approve/reject, users, rentals
-- [ ] Public pages (Home, All Equipment)
+- [x] Home page (banner, featured 6, categories, Why Choose Us, How It Works, reviews, Recently Added)
+- [ ] All Equipment public page
 - [ ] Details + Favorites
 - [ ] Booking + Stripe + Payments
 - [ ] Dashboards (customer / owner / admin)
@@ -71,6 +71,28 @@
 - BetterAuth Google social login requires authorized redirect URI set in Google Cloud Console for production.
 
 ## Log (newest first)
+### 2026-11-19 — Step 8: Home Page Sections
+- Done:
+  - Rewrote `src/app/page.js` as a single full-featured home page (was a placeholder hero-only stub).
+  - **Banner**: animated hero with trust badges (Verified Fleet, Site Delivery, Secure Escrow Stripe).
+  - **Featured Equipment**: 3-column responsive grid of 6 approved items from `GET /api/equipment/featured`, with image, name, category, price+rental type, and location. Framer Motion `whileInView` fade-up. Skeleton placeholders while loading.
+  - **Categories**: 6 cards (Construction, Photography, Vehicles & Transportation, Agriculture, Electronics, Event Equipment) with distinct color icon boxes, linking to `/equipment?category=...`.
+  - **Why Choose Us**: 4-pillar grid (Verified Owners, Quality Assured, Nationwide Delivery, 24/7 Support).
+  - **How It Works**: 4-step numbered timeline (Browse, Book with Escrow, Delivery, Confirm & Release).
+  - **Customer Reviews**: 4 hardcoded reviews (min 4 per spec) with star ratings, quote, name, role.
+  - **Recently Added**: 3-card preview of newest listings with "New Arrival" badge.
+  - All sections use Framer Motion `motion.div` with `whileInView` + `viewport={{ once: true }}` for scroll-triggered animations.
+  - Installed `framer-motion` as a dependency.
+  - Fixed dynamic Tailwind class issue: replaced `bg-\`${cat.color}-100\`` with literal `iconBox` strings per category object so Tailwind's static scanner picks up every color class.
+  - `npm run build` passes cleanly with Turbopack (17 routes).
+- Files:
+  - `src/app/page.js` (rewritten)
+  - `package.json` / `package-lock.json` (framer-motion added)
+  - `PROGRESS.md` (updated)
+- Test:
+  - `npm run build` — all 17 routes compiled successfully.
+- Commit message: `feat: build home page sections (banner, featured 6, categories, why choose us, how it works, reviews, recently added) with framer motion`
+
 ### 2026-11-19 — Step 7: Admin Dashboard Pages
 - Done:
   - Created `src/app/dashboard/admin/page.jsx` — Admin Overview with quick-access cards (Users, Equipment, Rentals, Settings).
