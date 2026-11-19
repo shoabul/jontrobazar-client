@@ -33,3 +33,23 @@ export const showAlert = ({
     confirmButtonText,
   });
 };
+
+export const showConfirm = ({
+  title,
+  text,
+  icon = "question",
+  confirmButtonText = "Confirm",
+  cancelButtonText = "Cancel",
+  confirmButtonColor = "#ea580c",
+}) => {
+  return Swal.fire({
+    title,
+    text,
+    icon,
+    showCancelButton: true,
+    confirmButtonColor,
+    cancelButtonColor: "#6b7280",
+    confirmButtonText,
+    cancelButtonText,
+  }).then((result) => result.isConfirmed);
+};

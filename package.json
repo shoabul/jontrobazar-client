@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "better-auth": "^1.7.25",
+    "date-fns": "^4.4.0",
     "framer-motion": "^14.14.0",
     "lucide-react": "^1.74.0",
     "mongodb": "^7.9.0",

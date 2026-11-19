@@ -10,6 +10,8 @@ import React, {
 import { useRouter } from "next/navigation";
 import { useSession, signOut as betterAuthSignOut } from "../lib/auth-client";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
 const AuthContext = createContext({
   user: null,
   session: null,
@@ -26,10 +28,20 @@ export const AuthProvider = ({ children }) => {
   const { data: sessionData, isPending, refetch } = useSession();
   const [token, setToken] = useState(null);
 
-  // Retrieve JWT from BetterAuth endpoint
+  // Exchange BetterAuth session for Express-compatible JWT
   const fetchToken = useCallback(async () => {
+    if (!sessionData?.user) return null;
     try {
-      const res = await fetch("/api/auth/token");
+      const res = await fetch(`${API_BASE}/users/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          email: sessionData.user.email,
+          role: sessionData.user.role || "customer",
+          name: sessionData.user.name || "User",
+        }),
+      });
       if (res.ok) {
         const data = await res.json();
         if (data?.token) {
@@ -38,10 +50,10 @@ export const AuthProvider = ({ children }) => {
         }
       }
     } catch (err) {
-      console.warn("Could not retrieve JWT token from BetterAuth:", err);
+      console.warn("Could not retrieve JWT token from Express:", err);
     }
     return null;
-  }, []);
+  }, [sessionData?.user]);
 
   useEffect(() => {
     let isMounted = true;
@@ -55,19 +67,12 @@ export const AuthProvider = ({ children }) => {
       };
     }
 
-    fetch("/api/auth/token")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (isMounted && data?.token) {
-          setToken(data.token);
-        }
-      })
-      .catch(() => {});
+    fetchToken();
 
     return () => {
       isMounted = false;
     };
-  }, [sessionData]);
+  }, [fetchToken]);
 
   const signOutUser = async () => {
     try {
@@ -90,6 +95,7 @@ export const AuthProvider = ({ children }) => {
         session: sessionData?.session || null,
         token,
         role: user ? role : "visitor",
+        isPending: isPending,
         isLoading: isPending,
         getToken: fetchToken,
         signOutUser,

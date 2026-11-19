@@ -16,3 +16,6 @@ export const {
   useSession,
   getSession,
 } = authClient;
+
+// Re-export authClient for getToken access
+export { authClient };
