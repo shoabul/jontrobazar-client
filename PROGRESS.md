@@ -1,7 +1,7 @@
 # PROGRESS.md — JontroBazar (client)
 
 ## Current Status
-- Last completed task: Step 8 (Public): Home page sections (banner, featured 6, categories, Why Choose Us, How It Works, reviews, Recently Added) with Framer Motion
+- Last completed task: Step 8 (Public): Home page sections (banner, featured 6, categories, Why Choose Us, How It Works, reviews, Recently Added) with Framer Motion — now split into separate components under `src/components/home/`
 - Currently working on: Step 9 (Public): All Equipment page (server-side search/filter/sort/pagination)
 - Overall: 8 / 12 build steps done
 
@@ -71,20 +71,48 @@
 - BetterAuth Google social login requires authorized redirect URI set in Google Cloud Console for production.
 
 ## Log (newest first)
-### 2026-11-19 — Step 8: Home Page Sections
+### 2026-11-19 — Step 8 Refactor: Component-Based Home Page
 - Done:
-  - Rewrote `src/app/page.js` as a single full-featured home page (was a placeholder hero-only stub).
-  - **Banner**: animated hero with trust badges (Verified Fleet, Site Delivery, Secure Escrow Stripe).
-  - **Featured Equipment**: 3-column responsive grid of 6 approved items from `GET /api/equipment/featured`, with image, name, category, price+rental type, and location. Framer Motion `whileInView` fade-up. Skeleton placeholders while loading.
-  - **Categories**: 6 cards (Construction, Photography, Vehicles & Transportation, Agriculture, Electronics, Event Equipment) with distinct color icon boxes, linking to `/equipment?category=...`.
-  - **Why Choose Us**: 4-pillar grid (Verified Owners, Quality Assured, Nationwide Delivery, 24/7 Support).
-  - **How It Works**: 4-step numbered timeline (Browse, Book with Escrow, Delivery, Confirm & Release).
-  - **Customer Reviews**: 4 hardcoded reviews (min 4 per spec) with star ratings, quote, name, role.
-  - **Recently Added**: 3-card preview of newest listings with "New Arrival" badge.
-  - All sections use Framer Motion `motion.div` with `whileInView` + `viewport={{ once: true }}` for scroll-triggered animations.
-  - Installed `framer-motion` as a dependency.
-  - Fixed dynamic Tailwind class issue: replaced `bg-\`${cat.color}-100\`` with literal `iconBox` strings per category object so Tailwind's static scanner picks up every color class.
+  - Split the monolithic home page into 7 self-contained section components under `src/components/home/`:
+    - `Hero.jsx` — animated banner with trust badges and dual CTAs.
+    - `FeaturedSection.jsx` — 6-item grid from `GET /api/equipment/featured` with loading skeletons.
+    - `CategoriesGrid.jsx` — 6 category cards with color-coded icon boxes.
+    - `WhyChooseUs.jsx` — 4-pillar value proposition grid.
+    - `HowItWorks.jsx` — 4-step numbered timeline.
+    - `CustomerReviews.jsx` — 4 review cards with star ratings.
+    - `RecentlyAdded.jsx` — 3-card newest listings preview.
+    - `EquipmentCard.jsx` — shared card component used by both Featured and Recently Added.
+  - `src/app/page.js` is now a thin orchestrator that imports and composes the sections.
+  - Fixed import paths to use `@/components/home/...` (jsconfig `@/*` → `./src/*`).
   - `npm run build` passes cleanly with Turbopack (17 routes).
+- Files:
+  - `src/app/page.js` (rewritten as orchestrator)
+  - `src/components/home/Hero.jsx` (new)
+  - `src/components/home/FeaturedSection.jsx` (new)
+  - `src/components/home/CategoriesGrid.jsx` (new)
+  - `src/components/home/WhyChooseUs.jsx` (new)
+  - `src/components/home/HowItWorks.jsx` (new)
+  - `src/components/home/CustomerReviews.jsx` (new)
+  - `src/components/home/RecentlyAdded.jsx` (new)
+  - `src/components/home/EquipmentCard.jsx` (new)
+  - `PROGRESS.md` (updated)
+- Test:
+  - `npm run build` — all 17 routes compiled successfully.
+- Commit message: `refactor: split home page into separate section components under src/components/home`
+
+### 2026-11-19 — Step 8: Home Page Sections (initial)
+- Done:
+  - Built the complete home page as a single `page.js` with all required sections.
+  - **Banner**: animated hero with trust badges (Verified Fleet, Site Delivery, Secure Escrow Stripe).
+  - **Featured Equipment**: 3-column responsive grid of 6 approved items from `GET /api/equipment/featured`.
+  - **Categories**: 6 cards linking to `/equipment?category=...`.
+  - **Why Choose Us**: 4-pillar grid.
+  - **How It Works**: 4-step numbered timeline.
+  - **Customer Reviews**: 4 hardcoded reviews (min 4 per spec).
+  - **Recently Added**: 3-card preview of newest listings.
+  - All sections use Framer Motion `motion.div` with `whileInView` + `viewport={{ once: true }}`.
+  - Installed `framer-motion` as a dependency.
+  - Fixed dynamic Tailwind class issue with literal `iconBox` strings.
 - Files:
   - `src/app/page.js` (rewritten)
   - `package.json` / `package-lock.json` (framer-motion added)
