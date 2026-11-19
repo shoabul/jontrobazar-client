@@ -13,6 +13,12 @@
 5. Step 11: Booking modal + Stripe + Payments + success page
 6. Step 12: Customer / Owner / Admin dashboards (tables) + Analytics + README + deploy
 
+## Bug Fixes Applied
+- `src/app/layout.js`: Added `export const instant = false;` — opts root layout out of instant-navigation validation (root AppShell reads `usePathname()` at runtime).
+- `src/app/layout.js`: Pass `{children}` to `<AppShell>` — previously the root layout rendered `<AppShell />` with no children, so every route showed Nav/Footer with a blank main area.
+- `src/app/dashboard/page.jsx`: `auth.api.session()` → `auth.api.getSession()` — the former does not exist in better-auth 1.7.25 and threw a TypeError on every `/dashboard` visit.
+- `src/app/dashboard/customer/page.jsx`: Created — the role redirect targets `/dashboard/customer` but no page existed, so logged-in customers hit a 404. Now a valid landing page.
+
 ## Completed Features (summary checklist)
 - [x] Setup & env
 - [x] Auth (register / login / Google / JWT via BetterAuth)
