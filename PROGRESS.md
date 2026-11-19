@@ -1,17 +1,16 @@
 # PROGRESS.md — JontroBazar (client)
 
 ## Current Status
-- Last completed task: Step 6 (Part 2): Owner dashboard pages — DashboardLayout, Add Equipment, My Equipment table, View details, Edit form
-- Currently working on: Step 7 (Admin): Approve/reject equipment, manage users pages
-- Overall: 6 / 12 build steps done
+- Last completed task: Step 7 (Admin): Admin dashboard pages — Users (role change), Equipment moderation (approve/reject/delete), Rentals monitoring, Settings
+- Currently working on: Step 8 (Public): Home page sections (banner, featured 6, categories, Why Choose Us, reviews, Framer Motion)
+- Overall: 7 / 12 build steps done
 
 ## Next Steps
-1. Step 7 (Client): Admin dashboard pages — All Users (change role), All Equipment (approve/reject/update/delete), All Rentals (monitor)
-2. Step 8: Home page sections (banner, featured 6, categories, Why Choose Us, reviews, Framer Motion)
-3. Step 9: All Equipment public page (server-side search/filter/sort/pagination)
-4. Step 10: Equipment Details + Favorites
-5. Step 11: Booking modal + Stripe + Payments + success page
-6. Step 12: Customer / Owner / Admin dashboards (tables) + Analytics + README + deploy
+1. Step 8: Home page sections (banner, featured 6, categories, Why Choose Us, reviews, Framer Motion)
+2. Step 9: All Equipment public page (server-side search/filter/sort/pagination)
+3. Step 10: Equipment Details + Favorites
+4. Step 11: Booking modal + Stripe + Payments + success page
+5. Step 12: Customer / Owner / Admin dashboards (tables) + Analytics + README + deploy
 
 ## Bug Fixes Applied
 - `src/app/layout.js`: Added `export const instant = false;` — opts root layout out of instant-navigation validation (root AppShell reads `usePathname()` at runtime).
@@ -24,7 +23,7 @@
 - [x] Auth (register / login / Google / JWT via BetterAuth)
 - [x] Server: Equipment CRUD (owner + admin routes, search/filter/sort, MongoDB text index)
 - [x] Owner: equipment CRUD (Add, My Equipment table, View, Edit)
-- [ ] Admin: approve/reject, users, rentals
+- [x] Admin: approve/reject, users, rentals
 - [ ] Public pages (Home, All Equipment)
 - [ ] Details + Favorites
 - [ ] Booking + Stripe + Payments
@@ -72,6 +71,30 @@
 - BetterAuth Google social login requires authorized redirect URI set in Google Cloud Console for production.
 
 ## Log (newest first)
+### 2026-11-19 — Step 7: Admin Dashboard Pages
+- Done:
+  - Created `src/app/dashboard/admin/page.jsx` — Admin Overview with quick-access cards (Users, Equipment, Rentals, Settings).
+  - Created `src/app/dashboard/admin/users/page.jsx` — All Users table with avatar, email, phone, role badge, and inline role-change dropdown (customer/owner/admin) via `PATCH /users/:id/role`.
+  - Created `src/app/dashboard/admin/equipment/page.jsx` — All Equipment moderation table across all statuses via `GET /admin/equipment`, with per-row Approve/Reject (`PATCH /equipment/:id/status`), View, and Delete actions.
+  - Created `src/app/dashboard/admin/rentals/page.jsx` — All Rentals monitoring table via `GET /bookings/all`, showing customer, equipment, dates, total, payment + booking status badges, and Complete/Cancel actions (`PATCH /bookings/:id/status`).
+  - Created `src/app/dashboard/admin/settings/page.jsx` — Platform settings view with loading, error, and empty states.
+  - Also created `src/app/dashboard/customer/page.jsx` — Customer Overview (My Rentals, Favorites, Profile cards) so the `/dashboard` role redirect lands on a valid route instead of a 404.
+  - All pages reuse the existing `useApi()` wrapper and SweetAlert toasts; follow the owner-page styling pattern (white cards, status badges, purple admin accent, responsive overflow tables).
+  - `npm run build` passes cleanly with Turbopack (17 routes).
+- Files:
+  - `src/app/dashboard/admin/page.jsx`
+  - `src/app/dashboard/admin/users/page.jsx`
+  - `src/app/dashboard/admin/equipment/page.jsx`
+  - `src/app/dashboard/admin/rentals/page.jsx`
+  - `src/app/dashboard/admin/settings/page.jsx`
+  - `src/app/dashboard/customer/page.jsx`
+  - `PROGRESS.md` (updated)
+- Test:
+  - `npm run build` — all 17 routes compiled successfully.
+- Commit messages:
+  - `feat: add customer dashboard overview page so role redirect lands on valid route`
+  - `feat: implement admin dashboard pages (overview, users, equipment moderation, rentals, settings)`
+
 ### 2026-11-19 — Step 6 (Part 2): Owner Dashboard Pages
 - Done:
   - Created `src/app/components/AppShell.jsx` — client boundary that detects `/dashboard*` paths and omits global `<Nav />` / `<Footer />`. Wrapped in `<Suspense>` so `usePathname()` doesn't block prerendering.
