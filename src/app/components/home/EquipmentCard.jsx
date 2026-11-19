@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Wrench, MapPin } from "lucide-react";
 
 /**
- * Shared equipment card used by FeaturedSection and RecentlyAdded.
+ * Shared equipment card used by FeaturedSection, RecentlyAdded, and All Equipment.
  *
  * Renders an image, name, category, price + rental type, and location.
  * Pure presentational component — all data comes from props.

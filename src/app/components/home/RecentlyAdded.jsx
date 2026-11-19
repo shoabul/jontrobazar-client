@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, TrendingUp } from "lucide-react";
-import { apiFetch } from "../../lib/api";
+import { apiFetch } from "../../../lib/api";
 import EquipmentCard from "./EquipmentCard";
 
 /**
