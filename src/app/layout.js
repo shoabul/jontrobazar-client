@@ -14,6 +14,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// The root layout's AppShell reads the pathname at runtime (usePathname) to
+// decide whether to render the global Nav/Footer. That blocks instant
+// navigation for the root segment, so opt out of instant-navigation
+// validation here (documented escape hatch in the instant-navigation guide).
+export const instant = false;
+
 export const metadata = {
   title: "JontroBazar — Bangladesh's Trusted Equipment Rental Marketplace",
   description:
