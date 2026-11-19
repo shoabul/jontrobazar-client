@@ -54,7 +54,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col bg-white dark:bg-[#090d16] text-neutral-900 dark:text-neutral-100 transition-colors selection:bg-orange-500 selection:text-white">
         <ThemeProvider>
           <AuthProvider>
-            <AppShell />
+            <AppShell>{children}</AppShell>
           </AuthProvider>
         </ThemeProvider>
       </body>

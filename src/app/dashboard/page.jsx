@@ -14,7 +14,7 @@ import { auth } from "../../lib/auth";
  */
 export default async function DashboardIndex() {
   const h = await headers();
-  const session = await auth.api.session({ headers: h });
+  const session = await auth.api.getSession({ headers: h });
   if (!session?.user) {
     redirect("/login?redirect=/dashboard");
   }
