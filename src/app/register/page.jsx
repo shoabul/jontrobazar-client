@@ -16,6 +16,8 @@ import {
   EyeOff,
   ArrowRight,
   ShieldCheck,
+  Building2,
+  Briefcase,
 } from "lucide-react";
 
 export default function RegisterPage() {
@@ -23,6 +25,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("customer"); // 'customer' | 'owner'
   const [photoType, setPhotoType] = useState("url"); // 'url' | 'upload'
   const [photoUrl, setPhotoUrl] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -105,7 +108,7 @@ export default function RegisterPage() {
         email: email.trim().toLowerCase(),
         password,
         image: photoUrl || "",
-        role: "customer", // default role as required by spec
+        role: role, // user-selected role: 'customer' or 'owner'
       });
 
       if (res?.error) {
@@ -281,6 +284,77 @@ export default function RegisterPage() {
                 </span>
               </div>
             )}
+          </div>
+
+          {/* Role Selector */}
+          <div>
+            <label
+              className="block text-xs font-bold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1.5"
+            >
+              Register As
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setRole("customer")}
+                className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                  role === "customer"
+                    ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20"
+                    : "border-neutral-300 dark:border-neutral-700 hover:border-orange-300 dark:hover:border-orange-700"
+                }`}
+              >
+                <div
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    role === "customer"
+                      ? "bg-orange-500"
+                      : "bg-neutral-100 dark:bg-neutral-800"
+                  }`}
+                >
+                  <User className={`w-5 h-5 ${role === "customer" ? "text-white" : "text-neutral-600 dark:text-neutral-400"}`} />
+                </div>
+                <div className="text-center">
+                  <span className={`text-sm font-semibold ${role === "customer" ? "text-orange-600 dark:text-orange-400" : "text-neutral-700 dark:text-neutral-300"}`}>
+                    Customer
+                  </span>
+                  <p className="text-[10px] text-neutral-500 mt-0.5">Browse & book equipment</p>
+                </div>
+                {role === "customer" && (
+                  <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold">
+                    ✓
+                  </div>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("owner")}
+                className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                  role === "owner"
+                    ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20"
+                    : "border-neutral-300 dark:border-neutral-700 hover:border-orange-300 dark:hover:border-orange-700"
+                }`}
+              >
+                <div
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    role === "owner"
+                      ? "bg-orange-500"
+                      : "bg-neutral-100 dark:bg-neutral-800"
+                  }`}
+                >
+                  <Briefcase className={`w-5 h-5 ${role === "owner" ? "text-white" : "text-neutral-600 dark:text-neutral-400"}`} />
+                </div>
+                <div className="text-center">
+                  <span className={`text-sm font-semibold ${role === "owner" ? "text-orange-600 dark:text-orange-400" : "text-neutral-700 dark:text-neutral-300"}`}>
+                    Owner
+                  </span>
+                  <p className="text-[10px] text-neutral-500 mt-0.5">List & rent out equipment</p>
+                </div>
+                {role === "owner" && (
+                  <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold">
+                    ✓
+                  </div>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Password */}

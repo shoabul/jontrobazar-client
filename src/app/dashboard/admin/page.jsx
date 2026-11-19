@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Settings,
   ArrowRight,
+  BarChart3,
 } from "lucide-react";
 
 /**
@@ -31,7 +32,7 @@ export default function AdminDashboardPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div
           onClick={() => router.push("/dashboard/admin/users")}
           className="p-6 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-purple-500 cursor-pointer transition-all"
@@ -89,6 +90,21 @@ export default function AdminDashboardPage() {
           </h3>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
             Platform configuration and preferences.
+          </p>
+        </div>
+
+        <div
+          onClick={() => router.push("/dashboard/admin/analytics")}
+          className="p-6 rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-purple-500 cursor-pointer transition-all"
+        >
+          <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/40 text-purple-600 flex items-center justify-center font-bold mb-4">
+            <BarChart3 className="w-5 h-5" />
+          </div>
+          <h3 className="text-base font-bold text-neutral-900 dark:text-white">
+            Analytics
+          </h3>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+            Platform-wide metrics, revenue, and insights.
           </p>
         </div>
       </div>

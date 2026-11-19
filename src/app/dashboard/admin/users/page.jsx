@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { useApi } from "../../../../lib/api";
+import { useApi } from "@/lib/api";
 import { showToast } from "../../../../lib/notify";
 import { Users, RefreshCw, AlertCircle, ShieldCheck } from "lucide-react";
 

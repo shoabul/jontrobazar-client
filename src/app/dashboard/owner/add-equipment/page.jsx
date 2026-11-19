@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useApi } from "../../../../lib/api";
+import { useApi } from "@/lib/api";
 import { showToast, showAlert } from "../../../../lib/notify";
 import {
   Wrench,

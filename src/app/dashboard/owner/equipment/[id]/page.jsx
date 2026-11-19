@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useApi } from "../../../../../lib/api";
+import { useApi } from "@/lib/api";
 import {
   MapPin,
   Package,

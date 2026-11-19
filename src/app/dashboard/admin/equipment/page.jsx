@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useApi } from "../../../../lib/api";
+import { useApi } from "@/lib/api";
 import { showToast } from "../../../../lib/notify";
 import {
   Wrench,
