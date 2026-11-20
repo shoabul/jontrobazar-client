@@ -78,7 +78,7 @@ export default function AdminEquipmentPage() {
     if (!confirmed) return;
 
     try {
-      const res = await api(`/equipment/${item._id}`, { method: "DELETE" });
+      const res = await api(`/admin/equipment/${item._id}`, { method: "DELETE" });
       const data = await res.json();
 
       if (!data.success) throw new Error(data.message || "Delete failed");
