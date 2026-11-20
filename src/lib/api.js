@@ -71,12 +71,21 @@ export async function apiFetch(path, options = {}, token = null) {
 /**
  * React hook: returns { api, token, isLoading }
  * api() calls automatically include the current JWT.
+ * On page reload, if the token hasn't arrived from React state yet,
+ * falls back to fetching the session from cookies directly.
  */
 export function useApi() {
   const { token, getToken, isLoading } = useAuth();
 
   const call = async (path, options = {}) => {
-    const currentToken = token || (await getToken());
+    let currentToken = token;
+    if (!currentToken) {
+      // Token not cached yet (e.g. page reload). Fetch it from cookies.
+      currentToken = await getToken();
+      if (!currentToken) {
+        throw new Error("Not authenticated. Please log in.");
+      }
+    }
     return apiFetch(path, options, currentToken);
   };
 
