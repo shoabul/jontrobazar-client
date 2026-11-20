@@ -30,7 +30,7 @@ export default function AdminUsersPage() {
         throw new Error(data.message || "Failed to load users");
       }
 
-      setUsers(data.data || []);
+      setUsers(data.users || data.data || []);
       setError("");
     } catch (err) {
       console.error("Fetch users error:", err);

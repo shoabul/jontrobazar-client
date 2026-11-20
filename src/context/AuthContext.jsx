@@ -9,7 +9,6 @@ import React, {
 } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, signOut as betterAuthSignOut } from "../lib/auth-client";
-import { getSession } from "../lib/auth-client";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
@@ -23,6 +22,28 @@ const AuthContext = createContext({
   signOutUser: async () => {},
   refreshSession: () => {},
 });
+
+/**
+ * Fetch the BetterAuth session directly from cookies.
+ * Uses a direct fetch call (not the React hook) so it works
+ * even on page reload before React has finished hydrating.
+ */
+async function getSessionFromCookies() {
+  try {
+    const res = await fetch("/api/auth/get-session", {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.user) return data.user;
+    }
+  } catch (err) {
+    console.warn("Could not read session from cookies:", err);
+  }
+  return null;
+}
 
 /**
  * Exchange a BetterAuth user for an Express-compatible JWT.
@@ -56,6 +77,8 @@ export const AuthProvider = ({ children }) => {
   const router = useRouter();
   const { data: sessionData, isPending, refetch } = useSession();
   const [token, setToken] = useState(null);
+  const [ssrUser, setSsrUser] = useState(null);
+  const [ssrChecked, setSsrChecked] = useState(false);
 
   /**
    * Get the Express JWT token.
@@ -66,19 +89,54 @@ export const AuthProvider = ({ children }) => {
    */
   const getToken = useCallback(async () => {
     // Try the cached token first
-    if (sessionData?.user) {
-      return exchangeSessionForJWT(sessionData.user);
-    }
-    // Fallback: read session directly from cookies (works on reload)
-    const ssr = await getSession();
-    if (ssr?.user) {
-      const t = await exchangeSessionForJWT(ssr.user);
-      if (t) setToken(t);
-      return t;
-    }
-    return null;
-  }, [sessionData?.user]);
+    if (token) return token;
 
+    // Try React session state
+    if (sessionData?.user) {
+      const t = await exchangeSessionForJWT(sessionData.user);
+      if (t) {
+        setToken(t);
+        return t;
+      }
+    }
+
+    // Fallback: read session directly from cookies (works on reload)
+    const ssr = await getSessionFromCookies();
+    if (ssr) {
+      const t = await exchangeSessionForJWT(ssr);
+      if (t) {
+        setToken(t);
+        return t;
+      }
+    }
+
+    // Final fallback: use SSR user if we have it
+    if (ssrUser) {
+      const t = await exchangeSessionForJWT(ssrUser);
+      if (t) {
+        setToken(t);
+        return t;
+      }
+    }
+
+    return null;
+  }, [token, sessionData?.user, ssrUser]);
+
+  // On mount, fetch session from cookies for immediate SSR-compatible auth
+  useEffect(() => {
+    let isMounted = true;
+    getSessionFromCookies().then((ssr) => {
+      if (isMounted && ssr) {
+        setSsrUser(ssr);
+      }
+      if (isMounted) setSsrChecked(true);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Keep token in sync with React session when it resolves
   useEffect(() => {
     let isMounted = true;
 
@@ -104,6 +162,8 @@ export const AuthProvider = ({ children }) => {
     try {
       await betterAuthSignOut();
       setToken(null);
+      setSsrUser(null);
+      setSsrChecked(false);
       router.push("/login");
       router.refresh();
     } catch (err) {
@@ -111,8 +171,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const user = sessionData?.user || null;
+  // Prefer SSR user until React session resolves
+  const user = sessionData?.user ?? ssrUser;
   const role = user?.role || "customer";
+  const isLoading = isPending || !ssrChecked;
 
   return (
     <AuthContext.Provider
@@ -122,7 +184,7 @@ export const AuthProvider = ({ children }) => {
         token,
         role: user ? role : "visitor",
         isPending: isPending,
-        isLoading: isPending,
+        isLoading,
         getToken,
         signOutUser,
         refreshSession: refetch,

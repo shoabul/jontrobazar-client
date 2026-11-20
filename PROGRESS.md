@@ -16,6 +16,13 @@
 - `src/app/layout.js`: Pass `{children}` to `<AppShell>` — previously the root layout rendered `<AppShell />` with no children, so every route showed Nav/Footer with a blank main area.
 - `src/app/dashboard/page.jsx`: `auth.api.session()` → `auth.api.getSession()` — the former does not exist in better-auth 1.7.25 and threw a TypeError on every `/dashboard` visit.
 - `src/app/dashboard/customer/page.jsx`: Created — the role redirect targets `/dashboard/customer` but no page existed, so logged-in customers hit a 404. Now a valid landing page.
+- **2026-11-20**: Fixed AuthContext `getToken()` cookie fallback for reload — added `getSessionFromCookies()` direct fetch to `/api/auth/get-session` so JWT can be obtained even before React `useSession` hydrates. Fixed admin users page to expect `data.users` instead of `data.data`. Fixed `/equipment/:id/status` route to include `verifyToken` before `verifyAdmin`.
+- Files updated:
+  - `src/context/AuthContext.jsx` — rewrote `getToken()` with multi-step fallback: cached token → React session → cookie session → SSR user
+  - `src/app/dashboard/admin/users/page.jsx` — `data.users || data.data` for server response format
+  - `src/app/dashboard/admin/equipment/page.jsx` — already working with `verifyToken` present
+  - `Controllers/user.controller.js` — all 4 functions now read/write from `db.collection("user")` (was `db.collection("users")`)
+  - `routes/equipment.routes.js` — `verifyToken` added before `verifyAdmin` on `PATCH /:id/status`
 
 ## Completed Features (summary checklist)
 - [x] Setup & env
