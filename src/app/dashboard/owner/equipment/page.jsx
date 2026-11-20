@@ -190,7 +190,10 @@ export default function MyEquipmentPage() {
               <span
                 className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${STATUS_STYLES[item.status] || STATUS_STYLES.pending}`}
               >
-                <StatusIcon className="w-3.5 h-3.5" />
+                {(() => {
+                  const StatusIcon = STATUS_ICONS[item.status] || AlertCircle;
+                  return <StatusIcon className="w-3.5 h-3.5" />;
+                })()}
                 {item.status}
               </span>
             </span>,
