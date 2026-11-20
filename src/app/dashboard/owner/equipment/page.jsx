@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useApi } from "@/lib/api";
 import { showToast } from "../../../../lib/notify";
+import MobileTable from "../../../components/MobileTable";
 import {
   Package,
   Plus,
@@ -138,115 +139,87 @@ export default function MyEquipmentPage() {
         </div>
       ) : (
         <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-850">
-                  <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                    Equipment
-                  </th>
-                  <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                    Category
-                  </th>
-                  <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                    Daily Rate
-                  </th>
-                  <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                    Quantity
-                  </th>
-                  <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                    Status
-                  </th>
-                  <th className="px-4 py-3 text-right font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item) => {
-                  const StatusIcon = STATUS_ICONS[item.status] || AlertCircle;
-                  return (
-                    <tr
-                      key={item._id}
-                      className="border-b border-neutral-100 dark:border-neutral-800/60 last:border-b-0 hover:bg-neutral-50 dark:hover:bg-neutral-850/40 transition-colors"
-                    >
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          {item.image ? (
-                            /* eslint-disable-next-line @next/next/no-img-element */
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="w-12 h-12 rounded-lg object-cover border border-neutral-200 dark:border-neutral-800 shrink-0"
-                            />
-                          ) : (
-                            <div className="w-12 h-12 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-400 shrink-0">
-                              <Package className="w-5 h-5" />
-                            </div>
-                          )}
-                          <div className="min-w-0">
-                            <div className="font-semibold text-neutral-900 dark:text-white truncate max-w-[220px]">
-                              {item.name}
-                            </div>
-                            <div className="text-xs text-neutral-500 truncate max-w-[220px]">
-                              {item.location}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="px-2.5 py-1 rounded-md bg-neutral-100 dark:bg-neutral-850 text-xs font-semibold text-neutral-700 dark:text-neutral-200">
-                          {item.category}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 font-bold text-orange-600 dark:text-orange-400">
-                        ৳{item.price?.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="text-neutral-700 dark:text-neutral-300">
-                          {item.quantity} unit{item.quantity > 1 ? "s" : ""}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${STATUS_STYLES[item.status] || STATUS_STYLES.pending}`}
-                        >
-                          <StatusIcon className="w-3.5 h-3.5" />
-                          {item.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link
-                            href={`/equipment/${item._id}`}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-neutral-200 dark:border-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                            View
-                          </Link>
-                          <Link
-                            href={`/dashboard/owner/equipment/${item._id}`}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-orange-200 dark:border-orange-900 text-xs font-semibold text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 transition-colors"
-                          >
-                            <Pencil className="w-3.5 h-3.5" />
-                            Update
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(item)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-red-200 dark:border-red-900 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <MobileTable
+          columns={[
+            { label: "Equipment" },
+            { label: "Category" },
+            { label: "Daily Rate" },
+            { label: "Quantity" },
+            { label: "Status" },
+            { label: "Actions", align: "right" },
+          ]}
+          data={items}
+          rowKey={(item) => item._id}
+          renderRow={(item) => [
+            <div key="equip" className="flex items-center gap-3">
+              {item.image ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-12 h-12 rounded-lg object-cover border border-neutral-200 dark:border-neutral-800 shrink-0"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-400 shrink-0">
+                  <Package className="w-5 h-5" />
+                </div>
+              )}
+              <div className="min-w-0">
+                <div className="font-semibold text-neutral-900 dark:text-white truncate max-w-[220px]">
+                  {item.name}
+                </div>
+                <div className="text-xs text-neutral-500 truncate max-w-[220px]">
+                  {item.location}
+                </div>
+              </div>
+            </div>,
+            <span key="cat">
+              <span className="px-2.5 py-1 rounded-md bg-neutral-100 dark:bg-neutral-850 text-xs font-semibold text-neutral-700 dark:text-neutral-200">
+                {item.category}
+              </span>
+            </span>,
+            <span key="price" className="font-bold text-orange-600 dark:text-orange-400">
+              ৳{item.price?.toLocaleString()}
+            </span>,
+            <span key="qty">
+              <span className="text-neutral-700 dark:text-neutral-300">
+                {item.quantity} unit{item.quantity > 1 ? "s" : ""}
+              </span>
+            </span>,
+            <span key="status">
+              <span
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${STATUS_STYLES[item.status] || STATUS_STYLES.pending}`}
+              >
+                <StatusIcon className="w-3.5 h-3.5" />
+                {item.status}
+              </span>
+            </span>,
+            <div key="actions" className="flex items-center justify-end flex-wrap gap-2">
+              <Link
+                href={`/equipment/${item._id}`}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-neutral-200 dark:border-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                View
+              </Link>
+              <Link
+                href={`/dashboard/owner/equipment/${item._id}`}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-orange-200 dark:border-orange-900 text-xs font-semibold text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/30 transition-colors"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                Update
+              </Link>
+              <button
+                onClick={() => handleDelete(item)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-red-200 dark:border-red-900 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete
+              </button>
+            </div>,
+          ]}
+        />
+      </div>
       )}
     </div>
   );

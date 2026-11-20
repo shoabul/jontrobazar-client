@@ -5,6 +5,7 @@ import { useApi } from "@/lib/api";
 import { showToast } from "@/lib/notify";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import MobileTable from "../../../components/MobileTable";
 import {
   Heart,
   HeartOff,
@@ -101,56 +102,20 @@ export default function CustomerFavoritesPage() {
           </p>
         </div>
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Equipment
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Price
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Location
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Saved On
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
-                {[...Array(5)].map((_, i) => (
-                  <tr key={i} className="animate-pulse">
-                    <td className="px-6 py-4">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4"></div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2"></div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3"></div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2"></div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2"></div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/4"></div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <MobileTable
+            loading
+            columns={[
+              { label: "Equipment" },
+              { label: "Category" },
+              { label: "Price" },
+              { label: "Location" },
+              { label: "Saved On" },
+              { label: "Actions" },
+            ]}
+            data={[]}
+            rowKey={() => ""}
+            renderRow={() => []}
+          />
         </div>
       </div>
     );
@@ -215,113 +180,85 @@ export default function CustomerFavoritesPage() {
         </div>
       ) : (
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Equipment
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Price
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Location
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Saved On
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
-                {favorites.map((fav) => {
-                  const eq = fav.equipment;
-                  return (
-                    <motion.tr
-                      key={fav._id || fav.equipmentId}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
-                          {eq?.image && (
-                            <img
-                              src={eq.image}
-                              alt={eq.name}
-                              className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
-                            />
-                          )}
-                          <div className="min-w-0">
-                            <h4 className="font-semibold text-neutral-900 dark:text-white truncate max-w-xs">
-                              {eq?.name || "Equipment"}
-                            </h4>
-                            {eq?.brand && (
-                              <p className="text-sm text-neutral-500 dark:text-neutral-400 truncate max-w-xs">
-                                {eq.brand} {eq.model ? `· ${eq.model}` : ""}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
-                          {eq?.category || "—"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-neutral-900 dark:text-white">
-                        {formatCurrency(eq?.price)}
-                        <span className="text-neutral-500 dark:text-neutral-400 font-normal ml-1">
-                          /{eq?.rentalType || "day"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-700 dark:text-neutral-300">
-                        {eq?.location || "—"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-700 dark:text-neutral-300">
-                        {formatDate(fav.createdAt)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          {eq?._id && (
-                            <Link
-                              href={`/equipment/${eq._id}`}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
-                            >
-                              <Truck className="w-3.5 h-3.5" />
-                              View
-                            </Link>
-                          )}
-                          <button
-                            onClick={() => handleRemove(fav.equipmentId)}
-                            disabled={deletingId === fav.equipmentId}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors disabled:opacity-50"
-                          >
-                            {deletingId === fav.equipmentId ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            ) : (
-                              <>
-                                <HeartOff className="w-3.5 h-3.5" />
-                                Remove
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <MobileTable
+          columns={[
+            { label: "Equipment" },
+            { label: "Category" },
+            { label: "Price" },
+            { label: "Location" },
+            { label: "Saved On" },
+            { label: "Actions" },
+          ]}
+          data={favorites}
+          rowKey={(fav) => fav._id || fav.equipmentId}
+          renderRow={(fav) => {
+            const eq = fav.equipment;
+            return [
+              <div key="equip" className="flex items-center gap-4">
+                {eq?.image && (
+                  <img
+                    src={eq.image}
+                    alt={eq.name}
+                    className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                  />
+                )}
+                <div className="min-w-0">
+                  <h4 className="font-semibold text-neutral-900 dark:text-white truncate max-w-xs">
+                    {eq?.name || "Equipment"}
+                  </h4>
+                  {eq?.brand && (
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400 truncate max-w-xs">
+                      {eq.brand} {eq.model ? `· ${eq.model}` : ""}
+                    </p>
+                  )}
+                </div>
+              </div>,
+              <span key="cat">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
+                  {eq?.category || "—"}
+                </span>
+              </span>,
+              <span key="price" className="font-medium text-neutral-900 dark:text-white">
+                {formatCurrency(eq?.price)}
+                <span className="text-neutral-500 dark:text-neutral-400 font-normal ml-1">
+                  /{eq?.rentalType || "day"}
+                </span>
+              </span>,
+              <span key="loc" className="text-sm text-neutral-700 dark:text-neutral-300">
+                {eq?.location || "—"}
+              </span>,
+              <span key="saved" className="text-sm text-neutral-700 dark:text-neutral-300">
+                {formatDate(fav.createdAt)}
+              </span>,
+              <div key="actions" className="flex items-center gap-2">
+                {eq?._id && (
+                  <Link
+                    href={`/equipment/${eq._id}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
+                  >
+                    <Truck className="w-3.5 h-3.5" />
+                    View
+                  </Link>
+                )}
+                <button
+                  onClick={() => handleRemove(fav.equipmentId)}
+                  disabled={deletingId === fav.equipmentId}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors disabled:opacity-50"
+                >
+                  {deletingId === fav.equipmentId ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <>
+                      <HeartOff className="w-3.5 h-3.5" />
+                      Remove
+                    </>
+                  )}
+                </button>
+              </div>,
+            ];
+          }}
+        />
+      </div>
       )}
     </div>
   );

@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useApi } from "@/lib/api";
 import { showToast } from "../../../../lib/notify";
+import MobileTable from "../../../components/MobileTable";
 import {
   Truck,
   CheckCircle,
@@ -116,112 +117,87 @@ export default function AdminRentalsPage() {
       </div>
 
       <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-850">
-                <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  Customer
-                </th>
-                <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  Equipment
-                </th>
-                <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  Dates
-                </th>
-                <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  Total
-                </th>
-                <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  Payment
-                </th>
-                <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  Booking
-                </th>
-                <th className="px-4 py-3 text-right font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {rentals.map((r) => (
-                <tr
-                  key={r._id}
-                  className="border-b border-neutral-100 dark:border-neutral-800/60 last:border-b-0 hover:bg-neutral-50 dark:hover:bg-neutral-850/40 transition-colors"
+        <MobileTable
+          columns={[
+            { label: "Customer" },
+            { label: "Equipment" },
+            { label: "Dates" },
+            { label: "Total" },
+            { label: "Payment" },
+            { label: "Booking" },
+            { label: "Actions", align: "right" },
+          ]}
+          data={rentals}
+          rowKey={(r) => r._id}
+          renderRow={(r) => [
+            <div key="cust">
+              <div className="font-semibold text-neutral-900 dark:text-white text-xs">
+                {r.customer?.name || "Guest"}
+              </div>
+              <div className="text-[10px] text-neutral-400">
+                {r.customer?.email || "—"}
+              </div>
+            </div>,
+            <span key="equip" className="font-medium text-neutral-700 dark:text-neutral-300 text-xs max-w-[180px] truncate block">
+              {r.equipment?.name || r.equipmentId || "—"}
+            </span>,
+            <div key="dates" className="text-xs text-neutral-600 dark:text-neutral-300">
+              <div>
+                Start:{' '}
+                {r.startDate
+                  ? new Date(r.startDate).toLocaleDateString()
+                  : "—"}
+              </div>
+              <div className="text-neutral-400">
+                End:{' '}
+                {r.endDate
+                  ? new Date(r.endDate).toLocaleDateString()
+                  : "—"}
+              </div>
+            </div>,
+            <span key="total" className="font-bold text-purple-600 dark:text-purple-400">
+              ৳{r.totalAmount?.toLocaleString()}
+            </span>,
+            <span key="payment">
+              <span
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${PAYMENT_STATUS_STYLES[r.paymentStatus] || PAYMENT_STATUS_STYLES.unpaid}`}
+              >
+                {r.paymentStatus || "unpaid"}
+              </span>
+            </span>,
+            <span key="booking">
+              <span
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${BOOKING_STATUS_STYLES[r.bookingStatus] || BOOKING_STATUS_STYLES.pending}`}
+              >
+                {r.bookingStatus || "pending"}
+              </span>
+            </span>,
+            <div key="actions" className="flex items-center justify-end gap-2">
+              {r.bookingStatus !== "completed" && (
+                <button
+                  onClick={() =>
+                    handleStatusChange(r._id, "completed")
+                  }
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-emerald-200 dark:border-emerald-900 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors cursor-pointer"
                 >
-                  <td className="px-4 py-3">
-                    <div className="font-semibold text-neutral-900 dark:text-white text-xs">
-                      {r.customer?.name || "Guest"}
-                    </div>
-                    <div className="text-[10px] text-neutral-400">
-                      {r.customer?.email || "—"}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 font-medium text-neutral-700 dark:text-neutral-300 text-xs max-w-[180px] truncate">
-                    {r.equipment?.name || r.equipmentId || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-neutral-600 dark:text-neutral-300">
-                    <div>
-                      Start:{" "}
-                      {r.startDate
-                        ? new Date(r.startDate).toLocaleDateString()
-                        : "—"}
-                    </div>
-                    <div className="text-neutral-400">
-                      End:{" "}
-                      {r.endDate
-                        ? new Date(r.endDate).toLocaleDateString()
-                        : "—"}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 font-bold text-purple-600 dark:text-purple-400">
-                    ৳{r.totalAmount?.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${PAYMENT_STATUS_STYLES[r.paymentStatus] || PAYMENT_STATUS_STYLES.unpaid}`}
-                    >
-                      {r.paymentStatus || "unpaid"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${BOOKING_STATUS_STYLES[r.bookingStatus] || BOOKING_STATUS_STYLES.pending}`}
-                    >
-                      {r.bookingStatus || "pending"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-2">
-                      {r.bookingStatus !== "completed" && (
-                        <button
-                          onClick={() =>
-                            handleStatusChange(r._id, "completed")
-                          }
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-emerald-200 dark:border-emerald-900 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors cursor-pointer"
-                        >
-                          <CheckCircle className="w-3.5 h-3.5" />
-                          Complete
-                        </button>
-                      )}
-                      {r.bookingStatus !== "cancelled" && (
-                        <button
-                          onClick={() =>
-                            handleStatusChange(r._id, "cancelled")
-                          }
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-red-200 dark:border-red-900 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
-                        >
-                          <XCircle className="w-3.5 h-3.5" />
-                          Cancel
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  Complete
+                </button>
+              )}
+              {r.bookingStatus !== "cancelled" && (
+                <button
+                  onClick={() =>
+                    handleStatusChange(r._id, "cancelled")
+                  }
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-red-200 dark:border-red-900 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
+                >
+                  <XCircle className="w-3.5 h-3.5" />
+                  Cancel
+                </button>
+              )}
+            </div>,
+          ]}
+        />
       </div>
     </div>
   );

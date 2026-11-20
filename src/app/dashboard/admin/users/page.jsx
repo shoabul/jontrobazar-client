@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useApi } from "@/lib/api";
 import { showToast } from "../../../../lib/notify";
+import MobileTable from "../../../components/MobileTable";
 import { Users, RefreshCw, AlertCircle, ShieldCheck } from "lucide-react";
 
 const ROLE_STYLES = {
@@ -96,82 +97,61 @@ export default function AdminUsersPage() {
       </div>
 
       <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-850">
-                <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  User
-                </th>
-                <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  Email
-                </th>
-                <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  Phone
-                </th>
-                <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  Role
-                </th>
-                <th className="px-4 py-3 text-right font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                  Change Role
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((u) => (
-                <tr
-                  key={u._id || u.email}
-                  className="border-b border-neutral-100 dark:border-neutral-800/60 last:border-b-0 hover:bg-neutral-50 dark:hover:bg-neutral-850/40 transition-colors"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      {u.image ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img
-                          src={u.image}
-                          alt={u.name}
-                          className="w-10 h-10 rounded-full object-cover border border-neutral-200 dark:border-neutral-800 shrink-0"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
-                          {(u.name || u.email || "U").charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      <div className="font-semibold text-neutral-900 dark:text-white">
-                        {u.name || "Unnamed"}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
-                    {u.email}
-                  </td>
-                  <td className="px-4 py-3 text-neutral-500 dark:text-neutral-400">
-                    {u.phone || "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${ROLE_STYLES[u.role] || ROLE_STYLES.customer}`}
-                    >
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      {u.role || "customer"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <select
-                      value={u.role || "customer"}
-                      onChange={(e) => handleRoleChange(u._id, e.target.value)}
-                      className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs font-semibold text-neutral-800 dark:text-neutral-200 cursor-pointer"
-                    >
-                      <option value="customer">Customer</option>
-                      <option value="owner">Owner</option>
-                      <option value="admin">Admin</option>
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <MobileTable
+          columns={[
+            { label: "User" },
+            { label: "Email" },
+            { label: "Phone" },
+            { label: "Role" },
+            { label: "Change Role", align: "right" },
+          ]}
+          data={users}
+          rowKey={(u) => u._id || u.email}
+          renderRow={(u) => [
+            <div key="user" className="flex items-center gap-3">
+              {u.image ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={u.image}
+                  alt={u.name}
+                  className="w-10 h-10 rounded-full object-cover border border-neutral-200 dark:border-neutral-800 shrink-0"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                  {(u.name || u.email || "U").charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className="font-semibold text-neutral-900 dark:text-white">
+                {u.name || "Unnamed"}
+              </div>
+            </div>,
+            <span key="email" className="text-neutral-600 dark:text-neutral-300">
+              {u.email}
+            </span>,
+            <span key="phone" className="text-neutral-500 dark:text-neutral-400">
+              {u.phone || "—"}
+            </span>,
+            <span key="role">
+              <span
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-bold uppercase tracking-wider ${ROLE_STYLES[u.role] || ROLE_STYLES.customer}`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                {u.role || "customer"}
+              </span>
+            </span>,
+            <div key="change" className="flex items-center justify-end">
+              <select
+                value={u.role || "customer"}
+                onChange={(e) => handleRoleChange(u._id, e.target.value)}
+                className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs font-semibold text-neutral-800 dark:text-neutral-200 cursor-pointer"
+              >
+                <option value="customer">Customer</option>
+                <option value="owner">Owner</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>,
+          ]}
+        />
       </div>
     </div>
   );

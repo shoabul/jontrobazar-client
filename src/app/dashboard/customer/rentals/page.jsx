@@ -5,6 +5,7 @@ import { useApi } from "@/lib/api";
 import { showToast } from "@/lib/notify";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import MobileTable from "../../../components/MobileTable";
 import {
   Calendar,
   Package,
@@ -106,62 +107,21 @@ export default function CustomerRentalsPage() {
           </p>
         </div>
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Equipment
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Dates
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Booking Date
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Total
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Payment
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
-                {[...Array(5)].map((_, i) => (
-                  <tr key={i} className="animate-pulse">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-3/4"></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2"></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2"></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3"></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3"></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3"></div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/4"></div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <MobileTable
+            loading
+            columns={[
+              { label: "Equipment" },
+              { label: "Dates" },
+              { label: "Booking Date" },
+              { label: "Total" },
+              { label: "Payment" },
+              { label: "Status" },
+              { label: "Actions" },
+            ]}
+            data={[]}
+            rowKey={() => ""}
+            renderRow={() => []}
+          />
         </div>
       </div>
     );
@@ -226,108 +186,78 @@ export default function CustomerRentalsPage() {
         </div>
       ) : (
         <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-neutral-50 dark:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700">
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Equipment
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Dates
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Booking Date
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Total
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Payment
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-700">
-                {rentals.map((rental) => (
-                  <motion.tr
-                    key={rental._id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-4">
-                        {rental.equipment?.image && (
-                          <img
-                            src={rental.equipment.image}
-                            alt={rental.equipment.name}
-                            className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
-                          />
-                        )}
-                        <div className="min-w-0">
-                          <h4 className="font-semibold text-neutral-900 dark:text-white truncate max-w-xs">
-                            {rental.equipment?.name || "Equipment"}
-                          </h4>
-                          <p className="text-sm text-neutral-500 dark:text-neutral-400 truncate max-w-xs">
-                            {rental.equipment?.category || ""}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="space-y-1 text-sm">
-                        <div className="flex items-center gap-1.5 text-neutral-700 dark:text-neutral-300">
-                          <Calendar className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
-                          <span>Start: {formatDate(rental.startDate)}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-neutral-700 dark:text-neutral-300">
-                          <Calendar className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
-                          <span>End: {formatDate(rental.endDate)}</span>
-                        </div>
-                        {rental.days && (
-                          <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
-                            <Clock className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
-                            <span>{rental.days} day{rental.days !== 1 ? "s" : ""}</span>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-700 dark:text-neutral-300">
-                      {formatDate(rental.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-neutral-900 dark:text-white">
-                      {formatCurrency(rental.totalAmount)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusBadge status={rental.paymentStatus} type="payment" />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <StatusBadge status={rental.bookingStatus} type="booking" />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {rental.equipmentId && (
-                        <Link
-                          href={`/equipment/${rental.equipmentId}`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
-                        >
-                          <Truck className="w-3.5 h-3.5" />
-                          View Details
-                        </Link>
-                      )}
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <MobileTable
+          columns={[
+            { label: "Equipment" },
+            { label: "Dates" },
+            { label: "Booking Date" },
+            { label: "Total" },
+            { label: "Payment" },
+            { label: "Status" },
+            { label: "Actions" },
+          ]}
+          data={rentals}
+          rowKey={(rental) => rental._id}
+          renderRow={(rental) => [
+            <div key="equip" className="flex items-center gap-4">
+              {rental.equipment?.image && (
+                <img
+                  src={rental.equipment.image}
+                  alt={rental.equipment.name}
+                  className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
+                />
+              )}
+              <div className="min-w-0">
+                <h4 className="font-semibold text-neutral-900 dark:text-white truncate max-w-xs">
+                  {rental.equipment?.name || "Equipment"}
+                </h4>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 truncate max-w-xs">
+                  {rental.equipment?.category || ""}
+                </p>
+              </div>
+            </div>,
+            <div key="dates" className="space-y-1 text-sm">
+              <div className="flex items-center gap-1.5 text-neutral-700 dark:text-neutral-300">
+                <Calendar className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
+                <span>Start: {formatDate(rental.startDate)}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-neutral-700 dark:text-neutral-300">
+                <Calendar className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
+                <span>End: {formatDate(rental.endDate)}</span>
+              </div>
+              {rental.days && (
+                <div className="flex items-center gap-1.5 text-neutral-500 dark:text-neutral-400">
+                  <Clock className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
+                  <span>{rental.days} day{rental.days !== 1 ? "s" : ""}</span>
+                </div>
+              )}
+            </div>,
+            <span key="bookingDate" className="text-sm text-neutral-700 dark:text-neutral-300">
+              {formatDate(rental.createdAt)}
+            </span>,
+            <span key="total" className="font-semibold text-neutral-900 dark:text-white">
+              {formatCurrency(rental.totalAmount)}
+            </span>,
+            <span key="payment">
+              <StatusBadge status={rental.paymentStatus} type="payment" />
+            </span>,
+            <span key="status">
+              <StatusBadge status={rental.bookingStatus} type="booking" />
+            </span>,
+            <span key="actions">
+              {rental.equipmentId && (
+                <Link
+                  href={`/equipment/${rental.equipmentId}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
+                >
+                  <Truck className="w-3.5 h-3.5" />
+                  View Details
+                </Link>
+              )}
+            </span>,
+          ]}
+        />
+      </div>
       )}
     </div>
   );

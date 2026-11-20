@@ -4,6 +4,7 @@ import React, { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/lib/api";
 import { showToast } from "@/lib/notify";
+import MobileTable from "../../components/MobileTable";
 import { Truck, Wrench, Users, Package, DollarSign, TrendingUp, BarChart3, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import {
   LineChart,
@@ -344,77 +345,59 @@ function OwnerAnalytics({ data }) {
             Recent Bookings
           </h3>
           {recentBookings.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-neutral-200 dark:border-neutral-700">
-                    <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                      Equipment
-                    </th>
-                    <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                      Customer
-                    </th>
-                    <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                      Dates
-                    </th>
-                    <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                      Amount
-                    </th>
-                    <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                      Payment
-                    </th>
-                    <th className="px-4 py-3 text-left font-bold text-xs uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentBookings.map((booking) => (
-                    <tr key={booking._id} className="border-b border-neutral-100 dark:border-neutral-800/60 last:border-b-0 hover:bg-neutral-50 dark:hover:bg-neutral-850/40">
-                      <td className="px-4 py-3 font-medium text-neutral-900 dark:text-white">
-                        {booking.equipmentName}
-                      </td>
-                      <td className="px-4 py-3 text-neutral-700 dark:text-neutral-300">
-                        {booking.customerName}
-                      </td>
-                      <td className="px-4 py-3 text-neutral-700 dark:text-neutral-300">
-                        {new Date(booking.startDate).toLocaleDateString("en-BD", { month: "short", day: "numeric" })} -{" "}
-                        {new Date(booking.endDate).toLocaleDateString("en-BD", { month: "short", day: "numeric" })}
-                      </td>
-                      <td className="px-4 py-3 font-semibold text-orange-600 dark:text-orange-400">
-                        {formatCurrency(booking.totalAmount)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                            booking.paymentStatus === "paid"
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-amber-100 text-amber-700"
-                          }`}
-                        >
-                          {booking.paymentStatus}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                            booking.bookingStatus === "completed"
-                              ? "bg-emerald-100 text-emerald-700"
-                              : booking.bookingStatus === "confirmed"
-                              ? "bg-blue-100 text-blue-700"
-                              : booking.bookingStatus === "cancelled"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-amber-100 text-amber-700"
-                          }`}
-                        >
-                          {booking.bookingStatus}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <MobileTable
+              columns={[
+                { label: "Equipment" },
+                { label: "Customer" },
+                { label: "Dates" },
+                { label: "Amount" },
+                { label: "Payment" },
+                { label: "Status" },
+              ]}
+              data={recentBookings}
+              rowKey={(booking) => booking._id}
+              renderRow={(booking) => [
+                <span key="equip" className="font-medium text-neutral-900 dark:text-white">
+                  {booking.equipmentName}
+                </span>,
+                <span key="cust" className="text-neutral-700 dark:text-neutral-300">
+                  {booking.customerName}
+                </span>,
+                <div key="dates" className="text-neutral-700 dark:text-neutral-300">
+                  {new Date(booking.startDate).toLocaleDateString("en-BD", { month: "short", day: "numeric" })} -{" "}
+                  {new Date(booking.endDate).toLocaleDateString("en-BD", { month: "short", day: "numeric" })}
+                </div>,
+                <span key="amt" className="font-semibold text-orange-600 dark:text-orange-400">
+                  {formatCurrency(booking.totalAmount)}
+                </span>,
+                <span key="payment">
+                  <span
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                      booking.paymentStatus === "paid"
+                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                        : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                    }`}
+                  >
+                    {booking.paymentStatus}
+                  </span>
+                </span>,
+                <span key="status">
+                  <span
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                      booking.bookingStatus === "completed"
+                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                        : booking.bookingStatus === "confirmed"
+                        ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                        : booking.bookingStatus === "cancelled"
+                        ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                        : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                    }`}
+                  >
+                    {booking.bookingStatus}
+                  </span>
+                </span>,
+              ]}
+            />
           ) : (
             <p className="text-center text-neutral-500 dark:text-neutral-400 py-8">No recent bookings</p>
           )}
