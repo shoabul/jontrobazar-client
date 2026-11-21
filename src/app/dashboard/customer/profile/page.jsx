@@ -49,6 +49,7 @@ export default function CustomerProfilePage() {
   const [success, setSuccess] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [imageFile, setImageFile] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -138,6 +139,46 @@ export default function CustomerProfilePage() {
     setFormData((prev) => ({ ...prev, photo: "" }));
   };
 
+  // Upload image to imgbb
+  const handleImageUpload = async () => {
+    if (!imageFile) return null;
+
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+    if (!apiKey) {
+      showToast("error", "imgbb API key not configured.");
+      return null;
+    }
+
+    try {
+      setUploadingImage(true);
+      const formData = new FormData();
+      formData.append("image", imageFile);
+
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${apiKey}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        showToast("success", "Photo uploaded to imgbb successfully!");
+        return data.data.url;
+      } else {
+        showToast("error", data.error?.message || "Failed to upload image.");
+        return null;
+      }
+    } catch (err) {
+      console.error("imgbb upload error:", err);
+      showToast("error", "Error uploading image to imgbb");
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
@@ -145,15 +186,16 @@ export default function CustomerProfilePage() {
     setSuccess("");
 
     try {
-      // If there's a new image file, upload it first (to imgbb or similar)
+      // If there's a new image file, upload it first to imgbb
       let photoUrl = formData.photo;
 
       if (imageFile) {
-        // TODO: Upload to imgbb - for now use preview as placeholder
-        // In production, you'd upload to imgbb here and get the URL
-        // For now, we'll just send the current photo or empty string
-        // The server currently expects a URL string for photo
-        photoUrl = previewImage;
+        const uploadedUrl = await handleImageUpload();
+        if (!uploadedUrl) {
+          setIsSaving(false);
+          return;
+        }
+        photoUrl = uploadedUrl;
       }
 
       const res = await api("/users/profile", {
@@ -360,13 +402,18 @@ export default function CustomerProfilePage() {
             <div className="pt-4">
               <button
                 type="submit"
-                disabled={isSaving}
+                disabled={isSaving || uploadingImage}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 bg-orange-600 text-white font-semibold rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSaving ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
                     Saving...
+                  </>
+                ) : uploadingImage ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Uploading to imgbb...
                   </>
                 ) : (
                   <>
