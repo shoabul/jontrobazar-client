@@ -39,7 +39,7 @@ export async function apiFetch(path, options = {}, token = null) {
     });
   } catch (err) {
     // Network failure (server down, CORS block, etc.)
-    showToast("error", "Cannot reach server. Please check your connection.");
+    // showToast("error", "Cannot reach server. Please check your connection.");
     throw err;
   }
 
@@ -61,7 +61,7 @@ export async function apiFetch(path, options = {}, token = null) {
 
   // 500 — server error
   if (res.status >= 500) {
-    showToast("error", "Server error. Please try again later.");
+    // showToast("error", "Server error. Please try again later.");
     throw new Error("Server error");
   }
 
