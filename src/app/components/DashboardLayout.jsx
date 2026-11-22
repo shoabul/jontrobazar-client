@@ -90,6 +90,7 @@ export default function DashboardLayout({ children }) {
 
   // Shared sidebar markup used by both the fixed desktop aside and the
   // mobile drawer so branding, menu and user footer stay in sync.
+
   const sidebarContent = (
     <>
       <div className="p-4 lg:p-6 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between gap-3">
@@ -243,7 +244,9 @@ export default function DashboardLayout({ children }) {
             </div>
           </header>
 
-          <div className="p-4 sm:p-6 lg:p-8 flex-1">{children}</div>
+          <div className="p-4 sm:p-6 lg:p-8 flex-1">
+            {children}
+          </div>
         </main>
       </div>
     </div>

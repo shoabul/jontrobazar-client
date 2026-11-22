@@ -8,7 +8,9 @@ import React, {
   useCallback,
 } from "react";
 import { useRouter } from "next/navigation";
-import { useSession, signOut as betterAuthSignOut } from "../lib/auth-client";
+import { useSession, signOut as betterAuthSignOut } from "@/lib/auth-client";
+// import { authClient } from "@/lib/auth-client";
+
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
@@ -90,16 +92,7 @@ export const AuthProvider = ({ children }) => {
   const getToken = useCallback(async () => {
     // Try the cached token first
     if (token) return token;
-
-    // Try React session state
-    if (sessionData?.user) {
-      const t = await exchangeSessionForJWT(sessionData.user);
-      if (t) {
-        setToken(t);
-        return t;
-      }
-    }
-
+    
     // Fallback: read session directly from cookies (works on reload)
     const ssr = await getSessionFromCookies();
     if (ssr) {
@@ -174,7 +167,8 @@ export const AuthProvider = ({ children }) => {
   // Prefer SSR user until React session resolves
   const user = sessionData?.user ?? ssrUser;
   const role = user?.role || "customer";
-  const isLoading = isPending || !ssrChecked;
+  // Don't wait for isPending if we already have a valid SSR user
+  const isLoading = (!ssrUser && isPending) || !ssrChecked;
 
   return (
     <AuthContext.Provider
