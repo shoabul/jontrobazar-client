@@ -6,7 +6,12 @@ import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 
 export default function ErrorBoundary({ error, reset }) {
   useEffect(() => {
-    console.error("Application runtime error:", error);
+    console.error("=== APPLICATION RUNTIME ERROR ===");
+    console.error("Error:", error);
+    console.error("Error message:", error?.message);
+    console.error("Error stack:", error?.stack);
+    console.error("Error name:", error?.name);
+    console.error("=================================");
   }, [error]);
 
   return (
@@ -20,8 +25,7 @@ export default function ErrorBoundary({ error, reset }) {
       </h1>
 
       <p className="max-w-md text-sm text-neutral-600 dark:text-neutral-400 mb-6">
-        An unexpected error occurred while processing this request. Our technical
-        dispatch has been notified.
+        An unexpected error occurred while processing this request. Please try again or contact support.
       </p>
 
       {error?.message && (

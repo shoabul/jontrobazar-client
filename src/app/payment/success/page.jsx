@@ -47,8 +47,11 @@ export default function PaymentSuccessPage() {
 
         if (data.success) {
           setStatus("success");
-          setPayment(data.data?.payment);
-          setBooking(data.data?.booking);
+          // Defensive: ensure we have plain objects, not MongoDB documents with special types
+          const paymentData = data.data?.payment ? { ...data.data.payment } : null;
+          const bookingData = data.data?.booking ? { ...data.data.booking } : null;
+          setPayment(paymentData);
+          setBooking(bookingData);
           showToast("success", "Payment verified! Your booking is confirmed.");
         } else {
           setStatus("failed");
@@ -56,6 +59,7 @@ export default function PaymentSuccessPage() {
           showToast("error", data.message || "Payment verification failed");
         }
       } catch (err) {
+        console.error("Payment verification error:", err);
         setStatus("failed");
         setError("Network error. Please contact support if payment was deducted.");
         showToast("error", "Verification failed. Please contact support.");
@@ -199,7 +203,7 @@ export default function PaymentSuccessPage() {
                       Transaction Complete
                     </h3>
                     <p className="text-sm text-emerald-700 dark:text-emerald-300">
-                      Amount: ৳{payment.amount?.toLocaleString() || "—"}
+                      Amount: ৳{typeof payment.amount === "number" ? payment.amount.toLocaleString() : (payment.amount?.toString() || "—")}
                     </p>
                   </div>
                 </div>
@@ -207,7 +211,7 @@ export default function PaymentSuccessPage() {
                   <div>
                     <p className="text-emerald-700 dark:text-emerald-300">Transaction ID</p>
                     <p className="font-mono text-xs text-neutral-700 dark:text-neutral-300 break-all">
-                      {payment.transactionId || "—"}
+                      {typeof payment.transactionId === "string" ? payment.transactionId : (payment.transactionId?.toString() || "—")}
                     </p>
                   </div>
                   <div>
@@ -247,10 +251,10 @@ export default function PaymentSuccessPage() {
                     )}
                     <div className="flex-1 min-w-0">
                       <h4 className="font-semibold text-neutral-900 dark:text-white truncate">
-                        {booking.equipment?.name || "Equipment"}
+                        {typeof booking.equipment?.name === "string" ? booking.equipment.name : "Equipment"}
                       </h4>
                       <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                        {booking.equipment?.category || ""}
+                        {typeof booking.equipment?.category === "string" ? booking.equipment.category : ""}
                       </p>
                     </div>
                   </div>
@@ -291,7 +295,7 @@ export default function PaymentSuccessPage() {
                       <div className="text-sm">
                         <p className="text-neutral-500 dark:text-neutral-400">Qty</p>
                         <p className="font-medium text-neutral-900 dark:text-white">
-                          {booking.quantity || 1}
+                          {typeof booking.quantity === "number" ? booking.quantity : (booking.quantity?.toString() || "1")}
                         </p>
                       </div>
                     </div>
@@ -300,7 +304,7 @@ export default function PaymentSuccessPage() {
                       <div className="text-sm">
                         <p className="text-neutral-500 dark:text-neutral-400">Total</p>
                         <p className="font-bold text-orange-600 dark:text-orange-400">
-                          ৳{booking.totalAmount?.toLocaleString() || "—"}
+                          ৳{typeof booking.totalAmount === "number" ? booking.totalAmount.toLocaleString() : (booking.totalAmount?.toString() || "—")}
                         </p>
                       </div>
                     </div>
@@ -310,12 +314,12 @@ export default function PaymentSuccessPage() {
                     <div className="pt-2 border-t border-neutral-200 dark:border-neutral-700 space-y-2">
                       {booking.contact && (
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                          <strong>Contact:</strong> {booking.contact}
+                          <strong>Contact:</strong> {typeof booking.contact === "string" ? booking.contact : booking.contact?.toString()}
                         </p>
                       )}
                       {booking.address && (
                         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                          <strong>Delivery:</strong> {booking.address}
+                          <strong>Delivery:</strong> {typeof booking.address === "string" ? booking.address : booking.address?.toString()}
                         </p>
                       )}
                     </div>
@@ -346,8 +350,9 @@ export default function PaymentSuccessPage() {
                   >
                     <span className="w-2 h-2 rounded-full bg-current" />
                     Status:{' '}
-                    {booking.bookingStatus?.charAt(0).toUpperCase() +
-                      booking.bookingStatus?.slice(1)}
+                    {typeof booking.bookingStatus === "string"
+                      ? booking.bookingStatus.charAt(0).toUpperCase() + booking.bookingStatus.slice(1)
+                      : "Unknown"}
                   </span>
                 </div>
               </div>
