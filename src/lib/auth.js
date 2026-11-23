@@ -1,14 +1,15 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { jwt } from "better-auth/plugins";
-import { MongoClient } from "mongodb";
+// import { MongoClient } from "mongodb";
+import { db } from "./mongodb";
 
-const uri = process.env.MONGO_URI || "mongodb://localhost:27017/jontrobazar";
-const dbName = process.env.DB_NAME || "jontrobazar";
+// const uri = process.env.MONGO_URI || "mongodb://localhost:27017/jontrobazar";
+// const dbName = process.env.DB_NAME || "jontrobazar";
 
-// Create client connection
-const client = new MongoClient(uri);
-const db = client.db(dbName);
+// // Create client connection
+// const client = new MongoClient(uri);
+// const db = client.db(dbName);
 
 export const auth = betterAuth({
   baseURL:
