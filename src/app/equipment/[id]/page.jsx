@@ -286,17 +286,17 @@ export default function EquipmentDetailPage() {
         <div className="text-center max-w-md">
           <AlertCircle className="w-16 h-16 text-neutral-300 dark:text-neutral-700 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">
-            Equipment Not Found
+            Sign In to Continue
           </h1>
           <p className="text-neutral-500 dark:text-neutral-400 mb-6">
-            {error || "This equipment listing doesn't exist or has been removed."}
+            { "This equipment information is available to authorized users only. Please log in to view the details."}
           </p>
           <Link
-            href="/equipment"
+            href="/login"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Browse All Equipment
+            Sign In
           </Link>
         </div>
       </div>

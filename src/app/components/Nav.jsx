@@ -11,7 +11,10 @@ import {
   Sun,
   Menu,
   X,
+  ChevronDown,
+  LayoutDashboard,
   LogOut,
+  User,
 } from "lucide-react";
 
 export default function Nav() {
@@ -19,7 +22,26 @@ export default function Nav() {
   const { theme, toggleTheme, mounted } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const { user, signOutUser } = useAuth();
+  const { user: authUser, role: authRole, signOutUser } = useAuth();
+  const [demoRole, setDemoRole] = useState("auto"); // 'auto' | 'visitor' | 'customer' | 'owner' | 'admin'
+
+  // Resolve active user: uses real BetterAuth session unless demo switcher overrides
+  let user = authUser;
+  if (demoRole !== "auto") {
+    if (demoRole === "visitor") {
+      user = null;
+    } else {
+      user = {
+        name: demoRole.charAt(0).toUpperCase() + demoRole.slice(1) + " Demo",
+        email: `${demoRole}@jontrobazar.com`,
+        role: demoRole,
+      };
+    }
+  }
+
+  const handleRoleChange = (role) => {
+    setDemoRole(role);
+  };
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -35,7 +57,54 @@ export default function Nav() {
 
   return (
     <>
-      {/* MAIN HEADER (Sticky on top across the entire page) */}
+      {/* 1. TOP UTILITY ANNOUNCEMENT BAR (Non-sticky: scrolls naturally with page) */}
+      <div className="w-full bg-[#0b0f17] text-xs text-neutral-300 border-b border-neutral-800/80 px-4 sm:px-6 lg:px-8 py-2">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+          {/* Left: Dispatch & Status info */}
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1.5 text-amber-400 font-semibold">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              Verified Fleet Across 64 Districts
+            </span>
+            <span className="text-neutral-700 hidden sm:inline">|</span>
+            <span className="hidden sm:inline text-neutral-400">
+              24/7 Dispatch Support:{" "}
+              <span className="text-white font-bold tracking-wider">
+                +880 9613-882200
+              </span>
+            </span>
+          </div>
+
+          {/* Right: Quick Demo Role Switcher */}
+          <div className="flex items-center gap-2 ml-auto">
+            <span className="text-neutral-400 hidden md:inline text-[11px]">
+              Quick Demo Role:
+            </span>
+            <div className="relative inline-block">
+              <select
+                aria-label="Quick Demo Role"
+                value={demoRole}
+                onChange={(e) => handleRoleChange(e.target.value)}
+                className="bg-neutral-900 text-neutral-200 border border-neutral-750 text-xs rounded px-2.5 py-1 pr-6 font-medium appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-orange-500"
+              >
+                <option value="auto">
+                  Live: {authUser ? `${authUser.name || authUser.email} (${authRole})` : "Logged Out (Visitor)"}
+                </option>
+                <option value="visitor">Preview: Logged Out (Visitor)</option>
+                <option value="customer">Preview: Customer</option>
+                <option value="owner">Preview: Equipment Owner</option>
+                <option value="admin">Preview: Administrator</option>
+              </select>
+              <ChevronDown className="w-3 h-3 text-neutral-400 pointer-events-none absolute right-2 top-1/2 -translate-y-1/2" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. MAIN HEADER (Sticky on top across the entire page) */}
       <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#0c1017]/95 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800/80 shadow-sm transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
           {/* Brand Logo & Tagline */}
@@ -137,7 +206,8 @@ export default function Nav() {
                 </Link>
                 <button
                   onClick={async () => {
-                    await signOutUser();
+                    if (demoRole !== "auto") setDemoRole("auto");
+                    if (authUser) await signOutUser();
                   }}
                   className="p-2 rounded-lg text-neutral-500 hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"
                   title="Logout"
@@ -217,7 +287,8 @@ export default function Nav() {
                   </div>
                   <button
                     onClick={async () => {
-                      await signOutUser();
+                      if (demoRole !== "auto") setDemoRole("auto");
+                      if (authUser) await signOutUser();
                       setMobileMenuOpen(false);
                     }}
                     className="flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-600 cursor-pointer"
